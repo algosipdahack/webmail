@@ -25,8 +25,14 @@ repositories {
 }
 
 dependencies {
+    annotationProcessor ('org.projectlombok:lombok')
+    implementation ('org.projectlombok:lombok')
     compile('com.sun.mail:javax.mail:1.6.2')
     compile('org.springframework.boot:spring-boot-starter-web')
+    compile('org.springframework.boot:spring-boot-starter-data-jpa')
+    compile('com.h2database:h2')
+    //compile('org.postgresql:postgresql')
+
     testCompile('org.springframework.boot:spring-boot-starter-test')
 }
 

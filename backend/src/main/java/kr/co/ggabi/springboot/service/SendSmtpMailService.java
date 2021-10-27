@@ -1,6 +1,6 @@
 package kr.co.ggabi.springboot.service;
 
-import kr.co.ggabi.springboot.domain.MailParam;
+import kr.co.ggabi.springboot.domain.params.MailParam;
 import org.springframework.stereotype.Service;
 
 import javax.mail.*;
@@ -40,14 +40,14 @@ public class SendSmtpMailService {
             props.put("mail.smtp.debug", "true");
             props.put("mail.smtp.auth", "true");
 
-            Authenticator auth = new SMTPAuthenticator("user@ggabi.co.kr", "1234");
+            Authenticator auth = new SMTPAuthenticator("user@ggabi.co.kr", "");
             Session mailSession = Session.getDefaultInstance(props, auth);
 
             MimeMessage message = new MimeMessage(mailSession);
             message.setFrom("user@ggabi.co.kr");
             message.addRecipients(Message.RecipientType.TO, String.valueOf(new InternetAddress(param.receiver)));
             message.setSubject(param.subject);
-            message.setText(param.contents);
+            message.setContent(param.contents, "text/html;charset=utf-8");
 
             Transport.send(message);
             res.put("status", "success");

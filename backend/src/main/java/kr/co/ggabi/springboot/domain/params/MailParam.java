@@ -1,4 +1,4 @@
-package kr.co.ggabi.springboot.domain;
+package kr.co.ggabi.springboot.domain.params;
 
 public class MailParam {
     public String subject;

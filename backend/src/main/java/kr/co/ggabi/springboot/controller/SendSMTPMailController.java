@@ -1,9 +1,8 @@
 package kr.co.ggabi.springboot.controller;
 
-import kr.co.ggabi.springboot.domain.MailParam;
+import kr.co.ggabi.springboot.domain.params.MailParam;
 import kr.co.ggabi.springboot.service.SendSmtpMailService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
