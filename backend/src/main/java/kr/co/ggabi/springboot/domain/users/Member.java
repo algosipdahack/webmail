@@ -4,6 +4,7 @@ package kr.co.ggabi.springboot.domain.users;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -11,7 +12,7 @@ import java.util.Date;
 @Getter
 @NoArgsConstructor
 @Entity
-public class Users {
+public class Member {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -39,9 +40,14 @@ public class Users {
 
     private String position;
 
+    private Boolean isPermitted = false;
+
+    @Enumerated(EnumType.STRING)
+    private Authority authority;
+
     @Builder
-    public Users(String username, String password, String nickname, String phone,
-                 Date birthday, String email, String gender, String department, String position){
+    public Member(String username, String password, String nickname, String phone, Date birthday,
+                  String email, String gender, String department, String position, Authority authority){
         this.username = username;
         this.password = password;
         this.nickname = nickname;
@@ -51,5 +57,6 @@ public class Users {
         this.gender = gender;
         this.department = department;
         this.position = position;
+        this.authority = authority;
     }
 }

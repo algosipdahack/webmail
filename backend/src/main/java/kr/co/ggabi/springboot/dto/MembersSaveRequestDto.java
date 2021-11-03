@@ -1,7 +1,8 @@
 package kr.co.ggabi.springboot.dto;
 
 
-import kr.co.ggabi.springboot.domain.users.Users;
+import kr.co.ggabi.springboot.domain.users.Authority;
+import kr.co.ggabi.springboot.domain.users.Member;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,7 +11,7 @@ import java.util.Date;
 
 @Getter
 @NoArgsConstructor
-public class UsersSaveRequestDto {
+public class MembersSaveRequestDto {
     private String username;
     private String password;
     private String nickname;
@@ -20,10 +21,11 @@ public class UsersSaveRequestDto {
     private String gender;
     private String department;
     private String position;
+    private Authority authority;
 
     @Builder
-    public UsersSaveRequestDto(String username, String password, String nickname, String phone, Date birthday,
-                               String email, String gender, String department, String position){
+    public MembersSaveRequestDto(String username, String password, String nickname, String phone, Date birthday,
+                                 String email, String gender, String department, String position, Authority authority){
         this.username = username;
         this.password = password;
         this.nickname = nickname;
@@ -33,12 +35,13 @@ public class UsersSaveRequestDto {
         this.gender = gender;
         this.department = department;
         this.position = position;
+        this.authority = authority;
     }
 
-    public Users toEntity(){
-        return Users.builder()
+    public Member toEntity(){
+        return Member.builder()
                 .username(username)
-                .password(password)
+                .password("{noop}" + password)
                 .nickname(nickname)
                 .phone(phone)
                 .birthday(birthday)
@@ -46,6 +49,7 @@ public class UsersSaveRequestDto {
                 .gender(gender)
                 .department(department)
                 .position(position)
+                .authority(authority)
                 .build();
     }
 }
