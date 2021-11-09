@@ -1,18 +1,24 @@
 package kr.co.ggabi.springboot.service;
 
 import kr.co.ggabi.springboot.domain.params.MailParam;
+import kr.co.ggabi.springboot.jwt.TokenProvider;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.mail.*;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
 @Service
+@RequiredArgsConstructor
 public class SendSmtpMailService {
+
+    private final TokenProvider tokenProvider;
 
     public class SMTPAuthenticator extends Authenticator {
         protected String username = "";
@@ -28,10 +34,12 @@ public class SendSmtpMailService {
     }
 
 
-    public Map<String, String> sendMail(MailParam param) {
+    public Map<String, String> sendMail(HttpServletRequest request, MailParam param) {
 
         Map<String, String> res = new HashMap<>();
         Properties props = new Properties();
+        String token = tokenProvider.resolveToken(request);
+        String username = tokenProvider.getUsernameFromToken(token);
 
         try{
             props.put("mail.smtp.port", "25");
@@ -40,11 +48,11 @@ public class SendSmtpMailService {
             props.put("mail.smtp.debug", "true");
             props.put("mail.smtp.auth", "true");
 
-            Authenticator auth = new SMTPAuthenticator("user@ggabi.co.kr", "");
+            Authenticator auth = new SMTPAuthenticator(username + "@ggabi.co.kr", "");
             Session mailSession = Session.getDefaultInstance(props, auth);
 
             MimeMessage message = new MimeMessage(mailSession);
-            message.setFrom("user@ggabi.co.kr");
+            message.setFrom(username + "@ggabi.co.kr");
             message.addRecipients(Message.RecipientType.TO, String.valueOf(new InternetAddress(param.receiver)));
             message.setSubject(param.subject);
             message.setContent(param.contents, "text/html;charset=utf-8");

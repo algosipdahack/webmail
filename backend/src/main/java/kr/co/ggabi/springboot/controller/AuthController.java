@@ -2,7 +2,9 @@ package kr.co.ggabi.springboot.controller;
 
 import kr.co.ggabi.springboot.dto.LoginDto;
 import kr.co.ggabi.springboot.dto.MembersSaveRequestDto;
+import kr.co.ggabi.springboot.dto.StatusDto;
 import kr.co.ggabi.springboot.dto.TokenDto;
+import kr.co.ggabi.springboot.jwt.JwtFilter;
 import kr.co.ggabi.springboot.jwt.TokenProvider;
 import kr.co.ggabi.springboot.service.CreateMemberService;
 import lombok.RequiredArgsConstructor;
@@ -13,13 +15,13 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.naming.AuthenticationException;
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.util.HashMap;
+import java.util.Map;
 
 
 @RequiredArgsConstructor
@@ -46,5 +48,14 @@ public class AuthController {
         TokenDto tokenDto = tokenProvider.generateTokenDto(authentication);
 
         return new ResponseEntity<>(tokenDto, new HttpHeaders(), HttpStatus.OK);
+    }
+
+    @GetMapping("/status")
+    public Map<String, String> status(HttpServletRequest httpServletRequest, StatusDto statusDto){
+        String token = tokenProvider.resolveToken(httpServletRequest);
+        Map<String, String> res = new HashMap<>();
+        res.put("username", tokenProvider.getUsernameFromToken(token));
+        res.put("auth", tokenProvider.getAuthFromToken(token));
+        return res;
     }
 }

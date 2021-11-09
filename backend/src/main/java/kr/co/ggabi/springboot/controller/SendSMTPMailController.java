@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 
 @RestController
@@ -16,9 +17,9 @@ public class SendSMTPMailController {
     private SendSmtpMailService smtpMailService;
 
     @PostMapping("/api/mail/send")
-    public Map<String, String> sendMail(@RequestBody MailParam param) {
+    public Map<String, String> sendMail(HttpServletRequest request, @RequestBody MailParam param) {
 
-        Map<String, String> res = this.smtpMailService.sendMail(param);
+        Map<String, String> res = this.smtpMailService.sendMail(request, param);
 
         return res;
     }
