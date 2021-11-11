@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.naming.AuthenticationException;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,7 +34,7 @@ public class AuthController {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
 
     @PostMapping("/signup")
-    public Long save(@RequestBody MembersSaveRequestDto requestDto){
+    public Long save(@RequestBody MembersSaveRequestDto requestDto) throws IOException {
         return createMemberService.save(requestDto);
     }
 

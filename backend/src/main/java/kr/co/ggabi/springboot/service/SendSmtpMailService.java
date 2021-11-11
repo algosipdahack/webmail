@@ -56,6 +56,8 @@ public class SendSmtpMailService {
             message.addRecipients(Message.RecipientType.TO, String.valueOf(new InternetAddress(param.receiver)));
             message.setSubject(param.subject);
             message.setContent(param.contents, "text/html;charset=utf-8");
+            // message.addRecipients(Message.RecipientType.CC, );
+            // message.addRecipients(Message.RecipientType.BCC, );
 
             Transport.send(message);
             res.put("status", "success");
