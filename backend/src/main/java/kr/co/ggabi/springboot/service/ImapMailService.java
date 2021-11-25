@@ -2,6 +2,7 @@ package kr.co.ggabi.springboot.service;
 
 import kr.co.ggabi.springboot.domain.IMAPMailSystem;
 import kr.co.ggabi.springboot.domain.users.Member;
+import kr.co.ggabi.springboot.dto.MailResponseDto;
 import kr.co.ggabi.springboot.jwt.TokenProvider;
 import kr.co.ggabi.springboot.repository.MembersRepository;
 import lombok.RequiredArgsConstructor;
@@ -30,11 +31,11 @@ public class ImapMailService {
         return res;
     }
 
-    public Map<String, String> showMailDetails(HttpServletRequest httpServletRequest, int idx) throws Exception {
+    public MailResponseDto showMailDetails(HttpServletRequest httpServletRequest, int idx) throws Exception {
 
-        imapMailSystem.login("ggabi.co.kr", tokenProvider.resolveToken(httpServletRequest));
+        long id = imapMailSystem.login("ggabi.co.kr", tokenProvider.resolveToken(httpServletRequest));
         int msgCount = imapMailSystem.getMessageCount();
-        Map<String, String> res = imapMailSystem.getEmailDetails(idx);
+        MailResponseDto res = imapMailSystem.getEmailDetails(id, idx);
         imapMailSystem.logout();
 
         return res;

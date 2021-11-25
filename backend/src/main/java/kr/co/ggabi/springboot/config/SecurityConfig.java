@@ -6,6 +6,7 @@ import kr.co.ggabi.springboot.jwt.JwtAuthenticationEntryPoint;
 import kr.co.ggabi.springboot.jwt.JwtSecurityConfig;
 import kr.co.ggabi.springboot.jwt.TokenProvider;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
@@ -49,8 +50,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
                 .and()
                 .authorizeRequests()
+                .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .antMatchers("/api/auth/**").permitAll()
                 .anyRequest().authenticated()
+
 
                 .and()
                 .apply(new JwtSecurityConfig(tokenProvider));

@@ -1,7 +1,9 @@
 package kr.co.ggabi.springboot.service;
 
 import kr.co.ggabi.springboot.domain.params.MailParam;
+import kr.co.ggabi.springboot.domain.users.Member;
 import kr.co.ggabi.springboot.jwt.TokenProvider;
+import kr.co.ggabi.springboot.repository.MembersRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +20,7 @@ import java.util.Properties;
 @RequiredArgsConstructor
 public class SendSmtpMailService {
 
+    private final MembersRepository membersRepository;
     private final TokenProvider tokenProvider;
 
     public class SMTPAuthenticator extends Authenticator {
@@ -40,6 +43,8 @@ public class SendSmtpMailService {
         Properties props = new Properties();
         String token = tokenProvider.resolveToken(request);
         String username = tokenProvider.getUsernameFromToken(token);
+        Member member = membersRepository.findByUsername(username).get();
+        String password = member.getPassword().substring(6);
 
         try{
             props.put("mail.smtp.port", "25");
@@ -48,16 +53,26 @@ public class SendSmtpMailService {
             props.put("mail.smtp.debug", "true");
             props.put("mail.smtp.auth", "true");
 
-            Authenticator auth = new SMTPAuthenticator(username + "@ggabi.co.kr", "");
+            Authenticator auth = new SMTPAuthenticator(username + "@ggabi.co.kr", password);
             Session mailSession = Session.getDefaultInstance(props, auth);
 
             MimeMessage message = new MimeMessage(mailSession);
             message.setFrom(username + "@ggabi.co.kr");
-            message.addRecipients(Message.RecipientType.TO, String.valueOf(new InternetAddress(param.receiver)));
+            for(String s: param.receiver) {
+                message.addRecipients(Message.RecipientType.TO, String.valueOf(new InternetAddress(s)));
+            }
+            System.out.println(username);
+            System.out.println(password);
+            System.out.println(param.subject);
+            System.out.println(param.contents);
             message.setSubject(param.subject);
             message.setContent(param.contents, "text/html;charset=utf-8");
-            // message.addRecipients(Message.RecipientType.CC, );
-            // message.addRecipients(Message.RecipientType.BCC, );
+            for(String s: param.CC) {
+                message.addRecipients(Message.RecipientType.CC, String.valueOf(new InternetAddress(s)));
+            }
+            for(String s: param.BCC) {
+                message.addRecipients(Message.RecipientType.BCC, String.valueOf(new InternetAddress(s)));
+            }
 
             Transport.send(message);
             res.put("status", "success");

@@ -3,6 +3,8 @@ kr/co/ggabi/springboot/dto/LoginDto.java
  kr.co.ggabi.springboot.dto.LoginDto$LoginDtoBuilder
 kr/co/ggabi/springboot/Application.java
  kr.co.ggabi.springboot.Application
+kr/co/ggabi/springboot/domain/users/Authority.java
+ kr.co.ggabi.springboot.domain.users.Authority
 kr/co/ggabi/springboot/controller/AuthController.java
  kr.co.ggabi.springboot.controller.AuthController
 kr/co/ggabi/springboot/dto/TokenDto.java
@@ -15,12 +17,12 @@ kr/co/ggabi/springboot/repository/MembersRepository.java
  kr.co.ggabi.springboot.repository.MembersRepository
 kr/co/ggabi/springboot/jwt/JwtAccessDeniedHandler.java
  kr.co.ggabi.springboot.jwt.JwtAccessDeniedHandler
-kr/co/ggabi/springboot/domain/users/Authority.java
- kr.co.ggabi.springboot.domain.users.Authority
-kr/co/ggabi/springboot/config/WebConfig.java
- kr.co.ggabi.springboot.config.WebConfig
 kr/co/ggabi/springboot/service/CustomUserDetailsService.java
  kr.co.ggabi.springboot.service.CustomUserDetailsService
+kr/co/ggabi/springboot/config/WebConfig.java
+ kr.co.ggabi.springboot.config.WebConfig
+kr/co/ggabi/springboot/domain/params/MailParam.java
+ kr.co.ggabi.springboot.domain.params.MailParam
 kr/co/ggabi/springboot/dto/MembersSaveRequestDto.java
  kr.co.ggabi.springboot.dto.MembersSaveRequestDto
  kr.co.ggabi.springboot.dto.MembersSaveRequestDto$MembersSaveRequestDtoBuilder
@@ -48,8 +50,10 @@ kr/co/ggabi/springboot/dto/MemberResponseDto.java
  kr.co.ggabi.springboot.dto.MemberResponseDto
 kr/co/ggabi/springboot/service/CreateMemberService.java
  kr.co.ggabi.springboot.service.CreateMemberService
-kr/co/ggabi/springboot/domain/params/MailParam.java
- kr.co.ggabi.springboot.domain.params.MailParam
+kr/co/ggabi/springboot/dto/MailResponseDto.java
+ kr.co.ggabi.springboot.dto.MailResponseDto
+kr/co/ggabi/springboot/service/FileDownloadService.java
+ kr.co.ggabi.springboot.service.FileDownloadService
 kr/co/ggabi/springboot/service/ImapMailService.java
  kr.co.ggabi.springboot.service.ImapMailService
 kr/co/ggabi/springboot/domain/IMAPMailSystem.java

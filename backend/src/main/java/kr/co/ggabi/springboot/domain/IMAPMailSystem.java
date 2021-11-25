@@ -1,6 +1,7 @@
 package kr.co.ggabi.springboot.domain;
 
 import kr.co.ggabi.springboot.domain.users.Member;
+import kr.co.ggabi.springboot.dto.MailResponseDto;
 import kr.co.ggabi.springboot.jwt.TokenProvider;
 import kr.co.ggabi.springboot.repository.MembersRepository;
 import lombok.RequiredArgsConstructor;
@@ -9,9 +10,11 @@ import org.springframework.stereotype.Component;
 
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.search.FlagTerm;
 import java.io.*;
+import java.net.URLEncoder;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -98,22 +101,50 @@ public class IMAPMailSystem {
         return res;
     }
 
-    public Map<String, String> getEmailDetails(int idx) throws MessagingException, IOException {
+    public MailResponseDto getEmailDetails(long uid, int idx) throws MessagingException, IOException {
         Message m = folder.getMessage(idx);
-        Map<String, String> res = new HashMap<>();
-        res.put("Subject", m.getSubject());
+        MailResponseDto res = new MailResponseDto();
+        res.subject = m.getSubject();
         InternetAddress from = (InternetAddress) m.getFrom()[0];
-        res.put("Nickname", from.getPersonal());
-        res.put("From", from.getAddress());
-        res.put("Date", m.getReceivedDate().toString());
-        res.put("Content-Type", m.getContentType());
+        res.nickname = from.getPersonal();
+        res.from = from.getAddress();
+        res.date = m.getReceivedDate();
+        res.contentType = m.getContentType();
         Object content = m.getContent();
         InputStream in = m.getInputStream();
-        InputStreamReader inputStreamReader = new InputStreamReader(in);
-        Stream<String> stringStream = new BufferedReader(inputStreamReader).lines();
-        res.put("Content", stringStream.collect(Collectors.joining("\n")));
+        if(content instanceof MimeMultipart) {
+            res.content = getTextFromMimeMultipart((MimeMultipart) content);
+            res.file = downloadAttachments(m, uid, idx);
+        }
+        else res.content = (String)content;
+
         return res;
     }
+
+    private Map<String, String> downloadAttachments(Message message, long uid, int idx) throws IOException, MessagingException{
+        Map<String, String> downloadedAttachments = new HashMap<>();
+        Multipart multipart = (Multipart) message.getContent();
+        int numberOfParts = multipart.getCount();
+        for (int partCount = 0; partCount < numberOfParts; partCount++) {
+            MimeBodyPart part = (MimeBodyPart) multipart.getBodyPart(partCount);
+            if (Part.ATTACHMENT.equalsIgnoreCase(part.getDisposition())) {
+                String file = part.getFileName().replace(' ', '+');
+                String path = "./downloads" + File.separator + Long.toString(uid) + File.separator + Integer.toString(idx) + File.separator + file;
+                File downloads = new File("./downloads");
+                downloads.mkdirs();
+                File uidDir = new File("./downloads" + File.separator + Long.toString(uid));
+                uidDir.mkdirs();
+                File idxDir = new File("./downloads" + File.separator + Long.toString(uid) + File.separator + Integer.toString(idx));
+                idxDir.mkdirs();
+                part.saveFile(path);
+                file = URLEncoder.encode(part.getFileName(), "UTF-8");
+                String link = "/api/mail/download/" + Integer.toString(idx) + "/" + file;
+                downloadedAttachments.put(file, link);
+            }
+        }
+        return downloadedAttachments;
+    }
+
 
     private String getTextFromMimeMultipart(
             MimeMultipart mimeMultipart)  throws MessagingException, IOException{
@@ -121,10 +152,16 @@ public class IMAPMailSystem {
         int count = mimeMultipart.getCount();
         for (int i = 0; i < count; i++) {
             BodyPart bodyPart = mimeMultipart.getBodyPart(i);
-            if (bodyPart.isMimeType("text/plain") && (bodyPart.getDisposition().toString() != "attachment")) {;
+            System.out.println(bodyPart.getDataHandler().toString());
+            System.out.println(bodyPart.getDisposition());
+            if (bodyPart.isMimeType("text/plain") &&
+                    (bodyPart.getDisposition() == null ||
+                    !(bodyPart.getDisposition().equals("attachment")))) {;
                 result = result + "\n" + bodyPart.getContent();
                 break; // without break same text appears twice in my tests
-            } else if (bodyPart.isMimeType("text/html")) {
+            } else if (bodyPart.isMimeType("text/html") &&
+                    (bodyPart.getDisposition() == null ||
+                    !(bodyPart.getDisposition().equals("attachment")))) {
                 String html = (String) bodyPart.getContent();
                 result = result + "\n" + Jsoup.parse(html).text();
             } else if (bodyPart.getContent() instanceof MimeMultipart){
@@ -134,7 +171,7 @@ public class IMAPMailSystem {
         return result;
     }
 
-    public void login(String host, String token) throws Exception {
+    public long login(String host, String token) throws Exception {
         String username = tokenProvider.getUsernameFromToken(token);
         Member member = membersRepository.findByUsername(username).get();
         String password = member.getPassword().substring(6);
@@ -153,6 +190,7 @@ public class IMAPMailSystem {
         folder = store.getFolder("inbox"); //inbox는 받은 메일함을 의미
         folder.open(Folder.READ_WRITE);
         //folder.open(Folder.READ_ONLY); //읽기 전용
+        return member.getId();
     }
 
     public void logout() throws MessagingException {
