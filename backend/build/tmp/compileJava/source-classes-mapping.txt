@@ -50,12 +50,16 @@ kr/co/ggabi/springboot/dto/MemberResponseDto.java
  kr.co.ggabi.springboot.dto.MemberResponseDto
 kr/co/ggabi/springboot/service/CreateMemberService.java
  kr.co.ggabi.springboot.service.CreateMemberService
-kr/co/ggabi/springboot/dto/MailResponseDto.java
- kr.co.ggabi.springboot.dto.MailResponseDto
 kr/co/ggabi/springboot/service/FileDownloadService.java
  kr.co.ggabi.springboot.service.FileDownloadService
+kr/co/ggabi/springboot/dto/MailboxResponseDto.java
+ kr.co.ggabi.springboot.dto.MailboxResponseDto
 kr/co/ggabi/springboot/service/ImapMailService.java
  kr.co.ggabi.springboot.service.ImapMailService
+kr/co/ggabi/springboot/dto/MailResponseDto.java
+ kr.co.ggabi.springboot.dto.MailResponseDto
+kr/co/ggabi/springboot/dto/Attachment.java
+ kr.co.ggabi.springboot.dto.Attachment
 kr/co/ggabi/springboot/domain/IMAPMailSystem.java
  kr.co.ggabi.springboot.domain.IMAPMailSystem
 kr/co/ggabi/springboot/controller/IMAPMailController.java

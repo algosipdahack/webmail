@@ -2,6 +2,7 @@ package kr.co.ggabi.springboot.controller;
 
 import kr.co.ggabi.springboot.domain.params.MailParam;
 import kr.co.ggabi.springboot.dto.MailResponseDto;
+import kr.co.ggabi.springboot.dto.MailboxResponseDto;
 import kr.co.ggabi.springboot.jwt.TokenProvider;
 import kr.co.ggabi.springboot.service.FileDownloadService;
 import kr.co.ggabi.springboot.service.ImapMailService;
@@ -27,7 +28,7 @@ public class IMAPMailController {
     private final FileDownloadService service;
 
     @GetMapping("/mailbox")
-    public Map<Integer, Map<String, String>> sendMail(HttpServletRequest httpServletRequest) throws Exception {
+    public Map<Integer, MailboxResponseDto> sendMail(HttpServletRequest httpServletRequest) throws Exception {
 
         return imapMailService.showMailbox(httpServletRequest);
     }

@@ -3,6 +3,7 @@ package kr.co.ggabi.springboot.service;
 import kr.co.ggabi.springboot.domain.IMAPMailSystem;
 import kr.co.ggabi.springboot.domain.users.Member;
 import kr.co.ggabi.springboot.dto.MailResponseDto;
+import kr.co.ggabi.springboot.dto.MailboxResponseDto;
 import kr.co.ggabi.springboot.jwt.TokenProvider;
 import kr.co.ggabi.springboot.repository.MembersRepository;
 import lombok.RequiredArgsConstructor;
@@ -22,10 +23,10 @@ public class ImapMailService {
     private final TokenProvider tokenProvider;
     private final MembersRepository membersRepository;
 
-    public Map<Integer, Map<String, String>> showMailbox(HttpServletRequest httpServletRequest) throws Exception {
+    public Map<Integer, MailboxResponseDto> showMailbox(HttpServletRequest httpServletRequest) throws Exception {
 
         imapMailSystem.login("ggabi.co.kr", tokenProvider.resolveToken(httpServletRequest));
-        Map<Integer, Map<String, String>> res = imapMailSystem.getEmailSubjects();
+        Map<Integer, MailboxResponseDto> res = imapMailSystem.getEmailSubjects();
         imapMailSystem.logout();
 
         return res;

@@ -1,7 +1,9 @@
 package kr.co.ggabi.springboot.domain;
 
 import kr.co.ggabi.springboot.domain.users.Member;
+import kr.co.ggabi.springboot.dto.Attachment;
 import kr.co.ggabi.springboot.dto.MailResponseDto;
+import kr.co.ggabi.springboot.dto.MailboxResponseDto;
 import kr.co.ggabi.springboot.jwt.TokenProvider;
 import kr.co.ggabi.springboot.repository.MembersRepository;
 import lombok.RequiredArgsConstructor;
@@ -55,8 +57,8 @@ public class IMAPMailSystem {
         return null;
     }
 
-    public Map<Integer, Map<String, String>> getEmailSubjects() throws MessagingException {
-        Map<Integer, Map<String, String>> res = new HashMap<>();
+    public Map<Integer, MailboxResponseDto> getEmailSubjects() throws MessagingException {
+        Map<Integer, MailboxResponseDto> res = new HashMap<>();
         Message[] unreadMessages = folder.search(new FlagTerm(new Flags(Flags.Flag.SEEN), false));
         Message[] messages = folder.getMessages();
         Set<Integer> unreadMessagesValSet = new HashSet<>();
@@ -78,24 +80,24 @@ public class IMAPMailSystem {
         Flags seenFlag = new Flags(Flags.Flag.SEEN);
         folder.setFlags(unreadMessages, seenFlag, false);
         for (Message m : unreadMessages) {
-            Map<String, String> mailSubjectMap = new HashMap<>();
-            mailSubjectMap.put("Subject", m.getSubject());
+            MailboxResponseDto mailboxResponseDto = new MailboxResponseDto();
+            mailboxResponseDto.subject = m.getSubject();
             InternetAddress from = (InternetAddress) m.getFrom()[0];
-            mailSubjectMap.put("Nickname", from.getPersonal());
-            mailSubjectMap.put("From", from.getAddress());
-            mailSubjectMap.put("Date", m.getReceivedDate().toString());
-            mailSubjectMap.put("Read", "false");
-            res.put(m.getMessageNumber(), mailSubjectMap);
+            mailboxResponseDto.nickname = from.getPersonal();
+            mailboxResponseDto.from = from.getAddress();
+            mailboxResponseDto.date = m.getReceivedDate();
+            mailboxResponseDto.read = false;
+            res.put(m.getMessageNumber(), mailboxResponseDto);
         }
         for (Message m : readMessages) {
-            Map<String, String> mailSubjectMap = new HashMap<>();
-            mailSubjectMap.put("Subject", m.getSubject());
+            MailboxResponseDto mailboxResponseDto = new MailboxResponseDto();
+            mailboxResponseDto.subject = m.getSubject();
             InternetAddress from = (InternetAddress) m.getFrom()[0];
-            mailSubjectMap.put("Nickname", from.getPersonal());
-            mailSubjectMap.put("From", from.getAddress());
-            mailSubjectMap.put("Date", m.getReceivedDate().toString());
-            mailSubjectMap.put("Read", "true");
-            res.put(m.getMessageNumber(), mailSubjectMap);
+            mailboxResponseDto.nickname = from.getPersonal();
+            mailboxResponseDto.from = from.getAddress();
+            mailboxResponseDto.date = m.getReceivedDate();
+            mailboxResponseDto.read = true;
+            res.put(m.getMessageNumber(), mailboxResponseDto);
         }
 
         return res;
@@ -121,8 +123,8 @@ public class IMAPMailSystem {
         return res;
     }
 
-    private Map<String, String> downloadAttachments(Message message, long uid, int idx) throws IOException, MessagingException{
-        Map<String, String> downloadedAttachments = new HashMap<>();
+    private Map<String, Attachment> downloadAttachments(Message message, long uid, int idx) throws IOException, MessagingException{
+        Map<String, Attachment> downloadedAttachments = new HashMap<>();
         Multipart multipart = (Multipart) message.getContent();
         int numberOfParts = multipart.getCount();
         for (int partCount = 0; partCount < numberOfParts; partCount++) {
@@ -139,7 +141,10 @@ public class IMAPMailSystem {
                 part.saveFile(path);
                 file = URLEncoder.encode(part.getFileName(), "UTF-8");
                 String link = "/api/mail/download/" + Integer.toString(idx) + "/" + file;
-                downloadedAttachments.put(file, link);
+                Attachment attachment = new Attachment();
+                attachment.size = part.getSize();
+                attachment.url = link;
+                downloadedAttachments.put(file, attachment);
             }
         }
         return downloadedAttachments;
