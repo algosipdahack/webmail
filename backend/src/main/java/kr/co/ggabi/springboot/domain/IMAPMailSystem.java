@@ -116,6 +116,9 @@ public class IMAPMailSystem {
         InputStream in = m.getInputStream();
         if(content instanceof MimeMultipart) {
             res.content = getTextFromMimeMultipart((MimeMultipart) content);
+            if(res.content.equals("")){
+                res.content = getPlainTextFromMimeMultipart((MimeMultipart) content);
+            }
             res.file = downloadAttachments(m, uid, idx);
         }
         else res.content = (String)content;
@@ -159,18 +162,30 @@ public class IMAPMailSystem {
             BodyPart bodyPart = mimeMultipart.getBodyPart(i);
             System.out.println(bodyPart.getDataHandler().toString());
             System.out.println(bodyPart.getDisposition());
-            if (bodyPart.isMimeType("text/plain") &&
+            if (bodyPart.isMimeType("text/html") &&
                     (bodyPart.getDisposition() == null ||
-                    !(bodyPart.getDisposition().equals("attachment")))) {;
+                            !(bodyPart.getDisposition().equals("attachment")))) {;
                 result = result + "\n" + bodyPart.getContent();
-                break; // without break same text appears twice in my tests
-            } else if (bodyPart.isMimeType("text/html") &&
-                    (bodyPart.getDisposition() == null ||
-                    !(bodyPart.getDisposition().equals("attachment")))) {
-                String html = (String) bodyPart.getContent();
-                result = result + "\n" + Jsoup.parse(html).text();
             } else if (bodyPart.getContent() instanceof MimeMultipart){
                 result = result + getTextFromMimeMultipart((MimeMultipart)bodyPart.getContent());
+            }
+        }
+        return result;
+    }
+    private String getPlainTextFromMimeMultipart(
+            MimeMultipart mimeMultipart)  throws MessagingException, IOException{
+        String result = "";
+        int count = mimeMultipart.getCount();
+        for (int i = 0; i < count; i++) {
+            BodyPart bodyPart = mimeMultipart.getBodyPart(i);
+            System.out.println(bodyPart.getDataHandler().toString());
+            System.out.println(bodyPart.getDisposition());
+            if (bodyPart.isMimeType("text/plain") &&
+                    (bodyPart.getDisposition() == null ||
+                            !(bodyPart.getDisposition().equals("attachment")))) {;
+                result = result + "\n" + bodyPart.getContent();
+            } else if (bodyPart.getContent() instanceof MimeMultipart){
+                result = result + getPlainTextFromMimeMultipart((MimeMultipart)bodyPart.getContent());
             }
         }
         return result;
