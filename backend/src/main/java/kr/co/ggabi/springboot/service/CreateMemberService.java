@@ -23,7 +23,7 @@ public class CreateMemberService {
         String username = requestDto.toEntity().getUsername();
         String password = requestDto.toEntity().getPassword();
         System.out.println(dir + " AddUser " + username + "@ggabi.co.kr " + password.substring(6));
-        //Process process = Runtime.getRuntime().exec(dir + " AddUser " + username + "@ggabi.co.kr " + password.substring(6));
+        //Process process = Runtime.getRuntime().exec(dir + " AddUser " + username + "@ggabi.co.kr \'" + password.substring(6) + "\'");
         return membersRepository.save(requestDto.toEntity()).getId();
     }
 }

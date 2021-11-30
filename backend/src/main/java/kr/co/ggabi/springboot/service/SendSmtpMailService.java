@@ -6,13 +6,18 @@ import kr.co.ggabi.springboot.jwt.TokenProvider;
 import kr.co.ggabi.springboot.repository.MembersRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.activation.DataHandler;
+import javax.activation.DataSource;
+import javax.activation.FileTypeMap;
 import javax.mail.*;
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
+import javax.mail.internet.*;
+import javax.mail.util.ByteArrayDataSource;
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -68,12 +73,28 @@ public class SendSmtpMailService {
             message.setSubject(param.subject);
             message.setContent(param.contents, "text/html;charset=utf-8");
             for(String s: param.CC) {
+                System.out.println(s);
                 message.addRecipients(Message.RecipientType.CC, String.valueOf(new InternetAddress(s)));
             }
             for(String s: param.BCC) {
                 message.addRecipients(Message.RecipientType.BCC, String.valueOf(new InternetAddress(s)));
             }
-
+            if(!param.attachments.isEmpty()) {
+                BodyPart textPart = new MimeBodyPart();
+                textPart.setContent(param.contents, "text/html;charset=utf-8");
+                Multipart multipart = new MimeMultipart();
+                multipart.addBodyPart(textPart);
+                for (MultipartFile file : param.attachments) {
+                    BodyPart bodyPart = new MimeBodyPart();
+                    String mimeType = FileTypeMap.getDefaultFileTypeMap().getContentType(file.getOriginalFilename());
+                    DataSource dataSource = new ByteArrayDataSource(file.getBytes(), mimeType);
+                    bodyPart.setDataHandler(new DataHandler(dataSource));
+                    bodyPart.setFileName(file.getOriginalFilename());
+                    bodyPart.setDisposition(Part.ATTACHMENT);
+                    multipart.addBodyPart(bodyPart);
+                }
+                message.setContent(multipart);
+            }
             Transport.send(message);
             res.put("status", "success");
 
@@ -85,6 +106,8 @@ public class SendSmtpMailService {
             e.printStackTrace();
             res.put("status", "fail");
 
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
         return res;

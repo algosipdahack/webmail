@@ -10,6 +10,6 @@ public class MailResponseDto {
     public Date date;
     public String contentType;
     public String content;
-    public Map<String, Attachment> file;
+    public Map<String, AttachmentResponseDto> file;
 
 }

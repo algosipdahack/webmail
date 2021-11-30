@@ -1,13 +1,12 @@
 package kr.co.ggabi.springboot.domain;
 
 import kr.co.ggabi.springboot.domain.users.Member;
-import kr.co.ggabi.springboot.dto.Attachment;
+import kr.co.ggabi.springboot.dto.AttachmentResponseDto;
 import kr.co.ggabi.springboot.dto.MailResponseDto;
 import kr.co.ggabi.springboot.dto.MailboxResponseDto;
 import kr.co.ggabi.springboot.jwt.TokenProvider;
 import kr.co.ggabi.springboot.repository.MembersRepository;
 import lombok.RequiredArgsConstructor;
-import org.jsoup.Jsoup;
 import org.springframework.stereotype.Component;
 
 import javax.mail.*;
@@ -18,8 +17,6 @@ import javax.mail.search.FlagTerm;
 import java.io.*;
 import java.net.URLEncoder;
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Component
 @RequiredArgsConstructor
@@ -121,13 +118,15 @@ public class IMAPMailSystem {
             }
             res.file = downloadAttachments(m, uid, idx);
         }
-        else res.content = (String)content;
-
+        else {
+            res.content = (String) content;
+            res.file = new HashMap<>();
+        }
         return res;
     }
 
-    private Map<String, Attachment> downloadAttachments(Message message, long uid, int idx) throws IOException, MessagingException{
-        Map<String, Attachment> downloadedAttachments = new HashMap<>();
+    private Map<String, AttachmentResponseDto> downloadAttachments(Message message, long uid, int idx) throws IOException, MessagingException{
+        Map<String, AttachmentResponseDto> downloadedAttachments = new HashMap<>();
         Multipart multipart = (Multipart) message.getContent();
         int numberOfParts = multipart.getCount();
         for (int partCount = 0; partCount < numberOfParts; partCount++) {
@@ -144,10 +143,10 @@ public class IMAPMailSystem {
                 part.saveFile(path);
                 file = URLEncoder.encode(part.getFileName(), "UTF-8");
                 String link = "/api/mail/download/" + Integer.toString(idx) + "/" + file;
-                Attachment attachment = new Attachment();
-                attachment.size = part.getSize();
-                attachment.url = link;
-                downloadedAttachments.put(file, attachment);
+                AttachmentResponseDto attachmentResponseDto = new AttachmentResponseDto();
+                attachmentResponseDto.size = part.getSize();
+                attachmentResponseDto.url = link;
+                downloadedAttachments.put(file, attachmentResponseDto);
             }
         }
         return downloadedAttachments;
