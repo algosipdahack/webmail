@@ -33,7 +33,7 @@ public class TokenProvider {
 
     @Value("${jwt.secret}")
     private String secret;
-    @Value("${jwt.token-validity-in-seconds}")
+    @Value("${jwt.token-validity-in-milliseconds}")
     private long ACCESS_TOKEN_EXPIRE_TIME;// 30분
     @Value("${jwt.header}")
     public String AUTHORIZATION_HEADER;
