@@ -3,6 +3,8 @@ kr/co/ggabi/springboot/dto/LoginDto.java
  kr.co.ggabi.springboot.dto.LoginDto$LoginDtoBuilder
 kr/co/ggabi/springboot/Application.java
  kr.co.ggabi.springboot.Application
+kr/co/ggabi/springboot/service/SaveWebMailService.java
+ kr.co.ggabi.springboot.service.SaveWebMailService
 kr/co/ggabi/springboot/dto/MailResponseDto.java
  kr.co.ggabi.springboot.dto.MailResponseDto
 kr/co/ggabi/springboot/controller/AuthController.java
@@ -15,14 +17,23 @@ kr/co/ggabi/springboot/dto/StatusDto.java
  kr.co.ggabi.springboot.dto.StatusDto$StatusDtoBuilder
 kr/co/ggabi/springboot/repository/MembersRepository.java
  kr.co.ggabi.springboot.repository.MembersRepository
+kr/co/ggabi/springboot/domain/mail/ReceivedWebMail.java
+ kr.co.ggabi.springboot.domain.mail.ReceivedWebMail
+ kr.co.ggabi.springboot.domain.mail.ReceivedWebMail$ReceivedWebMailBuilder
 kr/co/ggabi/springboot/jwt/JwtAccessDeniedHandler.java
  kr.co.ggabi.springboot.jwt.JwtAccessDeniedHandler
 kr/co/ggabi/springboot/domain/IMAPMailSystem.java
  kr.co.ggabi.springboot.domain.IMAPMailSystem
+kr/co/ggabi/springboot/domain/mail/WebMail.java
+ kr.co.ggabi.springboot.domain.mail.WebMail
+ kr.co.ggabi.springboot.domain.mail.WebMail$WebMailBuilder
 kr/co/ggabi/springboot/dto/AttachmentResponseDto.java
  kr.co.ggabi.springboot.dto.AttachmentResponseDto
 kr/co/ggabi/springboot/config/WebConfig.java
  kr.co.ggabi.springboot.config.WebConfig
+kr/co/ggabi/springboot/dto/WebMailDto.java
+ kr.co.ggabi.springboot.dto.WebMailDto
+ kr.co.ggabi.springboot.dto.WebMailDto$WebMailDtoBuilder
 kr/co/ggabi/springboot/service/ImapMailService.java
  kr.co.ggabi.springboot.service.ImapMailService
 kr/co/ggabi/springboot/dto/MailboxResponseDto.java
@@ -37,20 +48,23 @@ kr/co/ggabi/springboot/jwt/JwtFilter.java
  kr.co.ggabi.springboot.jwt.JwtFilter
 kr/co/ggabi/springboot/jwt/JwtSecurityConfig.java
  kr.co.ggabi.springboot.jwt.JwtSecurityConfig
+kr/co/ggabi/springboot/repository/WebMailRepository.java
+ kr.co.ggabi.springboot.repository.WebMailRepository
 kr/co/ggabi/springboot/config/SecurityConfig.java
  kr.co.ggabi.springboot.config.SecurityConfig
 kr/co/ggabi/springboot/service/FileDownloadService.java
  kr.co.ggabi.springboot.service.FileDownloadService
 kr/co/ggabi/springboot/controller/HelloController.java
  kr.co.ggabi.springboot.controller.HelloController
-kr/co/ggabi/springboot/controller/IMAPMailController.java
- kr.co.ggabi.springboot.controller.IMAPMailController
+kr/co/ggabi/springboot/controller/SendSMTPMailController.java
+ kr.co.ggabi.springboot.controller.SendSMTPMailController
 kr/co/ggabi/springboot/jwt/TokenProvider.java
  kr.co.ggabi.springboot.jwt.TokenProvider
 kr/co/ggabi/springboot/jwt/JwtAuthenticationEntryPoint.java
  kr.co.ggabi.springboot.jwt.JwtAuthenticationEntryPoint
-kr/co/ggabi/springboot/domain/users/Authority.java
- kr.co.ggabi.springboot.domain.users.Authority
+kr/co/ggabi/springboot/service/SendSmtpMailService.java
+ kr.co.ggabi.springboot.service.SendSmtpMailService
+ kr.co.ggabi.springboot.service.SendSmtpMailService$SMTPAuthenticator
 kr/co/ggabi/springboot/dto/MemberResponseDto.java
  kr.co.ggabi.springboot.dto.MemberResponseDto
 kr/co/ggabi/springboot/service/CreateMemberService.java
@@ -59,8 +73,7 @@ kr/co/ggabi/springboot/domain/params/MailParam.java
  kr.co.ggabi.springboot.domain.params.MailParam
 kr/co/ggabi/springboot/service/CustomUserDetailsService.java
  kr.co.ggabi.springboot.service.CustomUserDetailsService
-kr/co/ggabi/springboot/controller/SendSMTPMailController.java
- kr.co.ggabi.springboot.controller.SendSMTPMailController
-kr/co/ggabi/springboot/service/SendSmtpMailService.java
- kr.co.ggabi.springboot.service.SendSmtpMailService
- kr.co.ggabi.springboot.service.SendSmtpMailService$SMTPAuthenticator
+kr/co/ggabi/springboot/domain/users/Authority.java
+ kr.co.ggabi.springboot.domain.users.Authority
+kr/co/ggabi/springboot/controller/IMAPMailController.java
+ kr.co.ggabi.springboot.controller.IMAPMailController
