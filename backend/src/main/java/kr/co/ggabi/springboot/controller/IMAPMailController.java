@@ -27,24 +27,23 @@ public class IMAPMailController {
     private final TokenProvider tokenProvider;
     private final FileDownloadService service;
 
-    @GetMapping("/mailbox")
-    public Map<Integer, MailboxResponseDto> sendMail(HttpServletRequest httpServletRequest) throws Exception {
-
-        return imapMailService.showMailbox(httpServletRequest);
+    @GetMapping("/{mailBox}")
+    public Map<Integer, MailboxResponseDto> sendMail(HttpServletRequest httpServletRequest, @PathVariable("mailBox") String mailBox) throws Exception {
+        return imapMailService.showMailbox(httpServletRequest, mailBox);
     }
 
-    @GetMapping("/mailbox/{idx}")
-    public MailResponseDto showMail(HttpServletRequest httpServletRequest, @PathVariable("idx") int idx) throws Exception {
-        return imapMailService.showMailDetails(httpServletRequest, idx);
+    @GetMapping("/{mailBox}/{idx}")
+    public MailResponseDto showMail(HttpServletRequest httpServletRequest, @PathVariable("mailBox") String mailBox, @PathVariable("idx") int idx) throws Exception {
+        return imapMailService.showMailDetails(httpServletRequest, idx, mailBox);
     }
 
-    @GetMapping("/download/{idx}/{filename:.+}")
-    public ResponseEntity<Resource> downloadFile(HttpServletRequest request, @PathVariable("idx") int idx, @PathVariable("filename") String filename) throws IOException {
+    @GetMapping("/download/{mailBox}/{idx}/{filename:.+}")
+    public ResponseEntity<Resource> downloadFile(HttpServletRequest request, @PathVariable("mailBox") String mailBox, @PathVariable("idx") int idx, @PathVariable("filename") String filename) throws IOException {
         String token = tokenProvider.resolveToken(request);
         String username = tokenProvider.getUsernameFromToken(token);
         System.out.println(token);
         System.out.println(username);
-        Resource resource = service.loadFileAsResource(username, idx, filename);
+        Resource resource = service.loadFileAsResource(username, idx, filename, mailBox);
         String contentType = null;
         try {
             contentType = request.getServletContext().

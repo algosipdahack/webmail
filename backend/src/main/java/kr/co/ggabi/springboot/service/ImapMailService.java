@@ -23,20 +23,20 @@ public class ImapMailService {
     private final TokenProvider tokenProvider;
     private final MembersRepository membersRepository;
 
-    public Map<Integer, MailboxResponseDto> showMailbox(HttpServletRequest httpServletRequest) throws Exception {
+    public Map<Integer, MailboxResponseDto> showMailbox(HttpServletRequest httpServletRequest, String mailBox) throws Exception {
 
-        imapMailSystem.login("ggabi.co.kr", tokenProvider.resolveToken(httpServletRequest));
+        imapMailSystem.login("ggabi.co.kr", tokenProvider.resolveToken(httpServletRequest), mailBox);
         Map<Integer, MailboxResponseDto> res = imapMailSystem.getEmailSubjects();
         imapMailSystem.logout();
 
         return res;
     }
 
-    public MailResponseDto showMailDetails(HttpServletRequest httpServletRequest, int idx) throws Exception {
+    public MailResponseDto showMailDetails(HttpServletRequest httpServletRequest, int idx, String mailBox) throws Exception {
 
-        long id = imapMailSystem.login("ggabi.co.kr", tokenProvider.resolveToken(httpServletRequest));
+        long id = imapMailSystem.login("ggabi.co.kr", tokenProvider.resolveToken(httpServletRequest), mailBox);
         int msgCount = imapMailSystem.getMessageCount();
-        MailResponseDto res = imapMailSystem.getEmailDetails(id, idx);
+        MailResponseDto res = imapMailSystem.getEmailDetails(id, idx, mailBox);
         imapMailSystem.logout();
 
         return res;

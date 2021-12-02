@@ -19,12 +19,12 @@ public class FileDownloadService {
 
     private final MembersRepository membersRepository;
 
-    public Resource loadFileAsResource(String username, int idx, String filename){
+    public Resource loadFileAsResource(String username, int idx, String filename, String mailBox){
         Member member = membersRepository.findByUsername(username).get();
         System.out.println(filename);
         long uid = member.getId();
         try{
-            String path = "./downloads" + File.separator + Long.toString(uid) + File.separator + Integer.toString(idx) + File.separator + filename;
+            String path = "./downloads" + File.separator + mailBox + File.separator + Long.toString(uid) + File.separator + Integer.toString(idx) + File.separator + filename;
             Path filePath = Paths.get(path);
             Resource resource = new UrlResource(filePath.toUri());
             if(resource.exists()){

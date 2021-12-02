@@ -100,7 +100,7 @@ public class IMAPMailSystem {
         return res;
     }
 
-    public MailResponseDto getEmailDetails(long uid, int idx) throws MessagingException, IOException {
+    public MailResponseDto getEmailDetails(long uid, int idx, String mailBox) throws MessagingException, IOException {
         Message m = folder.getMessage(idx);
         MailResponseDto res = new MailResponseDto();
         res.subject = m.getSubject();
@@ -116,7 +116,7 @@ public class IMAPMailSystem {
             if(res.content.equals("")){
                 res.content = getPlainTextFromMimeMultipart((MimeMultipart) content);
             }
-            res.file = downloadAttachments(m, uid, idx);
+            res.file = downloadAttachments(m, uid, idx, mailBox);
         }
         else {
             res.content = (String) content;
@@ -125,7 +125,7 @@ public class IMAPMailSystem {
         return res;
     }
 
-    private Map<String, AttachmentResponseDto> downloadAttachments(Message message, long uid, int idx) throws IOException, MessagingException{
+    private Map<String, AttachmentResponseDto> downloadAttachments(Message message, long uid, int idx, String mailBox) throws IOException, MessagingException{
         Map<String, AttachmentResponseDto> downloadedAttachments = new HashMap<>();
         Multipart multipart = (Multipart) message.getContent();
         int numberOfParts = multipart.getCount();
@@ -133,16 +133,18 @@ public class IMAPMailSystem {
             MimeBodyPart part = (MimeBodyPart) multipart.getBodyPart(partCount);
             if (Part.ATTACHMENT.equalsIgnoreCase(part.getDisposition())) {
                 String file = part.getFileName().replace(' ', '+');
-                String path = "./downloads" + File.separator + Long.toString(uid) + File.separator + Integer.toString(idx) + File.separator + file;
+                String path = "./downloads" + File.separator + mailBox + File.separator + Long.toString(uid) + File.separator + Integer.toString(idx) + File.separator + file;
                 File downloads = new File("./downloads");
                 downloads.mkdirs();
-                File uidDir = new File("./downloads" + File.separator + Long.toString(uid));
+                File mailBoxDir = new File("./downloads" + File.separator + mailBox);
+                mailBoxDir.mkdirs();
+                File uidDir = new File("./downloads" + File.separator + mailBox + File.separator + Long.toString(uid));
                 uidDir.mkdirs();
-                File idxDir = new File("./downloads" + File.separator + Long.toString(uid) + File.separator + Integer.toString(idx));
+                File idxDir = new File("./downloads" + File.separator + mailBox + File.separator + Long.toString(uid) + File.separator + Integer.toString(idx));
                 idxDir.mkdirs();
                 part.saveFile(path);
                 file = URLEncoder.encode(part.getFileName(), "UTF-8");
-                String link = "/api/mail/download/" + Integer.toString(idx) + "/" + file;
+                String link = "/api/mail/download/" + mailBox + "/" + Integer.toString(idx) + "/" + file;
                 AttachmentResponseDto attachmentResponseDto = new AttachmentResponseDto();
                 attachmentResponseDto.size = part.getSize();
                 attachmentResponseDto.url = link;
@@ -190,7 +192,7 @@ public class IMAPMailSystem {
         return result;
     }
 
-    public long login(String host, String token) throws Exception {
+    public long login(String host, String token, String mailbox) throws Exception {
         String username = tokenProvider.getUsernameFromToken(token);
         Member member = membersRepository.findByUsername(username).get();
         String password = member.getPassword().substring(6);
@@ -206,7 +208,7 @@ public class IMAPMailSystem {
         }
         store = session.getStore("imap");
         store.connect(host, username + "@ggabi.co.kr", password);
-        folder = store.getFolder("inbox"); //inbox는 받은 메일함을 의미
+        folder = store.getFolder(mailbox); //inbox는 받은 메일함을 의미
         folder.open(Folder.READ_WRITE);
         //folder.open(Folder.READ_ONLY); //읽기 전용
         return member.getId();
