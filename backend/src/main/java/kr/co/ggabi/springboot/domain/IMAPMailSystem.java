@@ -13,6 +13,7 @@ import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMultipart;
+import javax.mail.internet.MimeUtility;
 import javax.mail.search.FlagTerm;
 import java.io.*;
 import java.net.URLEncoder;
@@ -132,7 +133,7 @@ public class IMAPMailSystem {
         for (int partCount = 0; partCount < numberOfParts; partCount++) {
             MimeBodyPart part = (MimeBodyPart) multipart.getBodyPart(partCount);
             if (Part.ATTACHMENT.equalsIgnoreCase(part.getDisposition())) {
-                String file = part.getFileName().replace(' ', '+');
+                String file = MimeUtility.decodeText(part.getFileName()).replace(' ', '+');
                 String path = "./downloads" + File.separator + mailBox + File.separator + Long.toString(uid) + File.separator + Integer.toString(idx) + File.separator + file;
                 File downloads = new File("./downloads");
                 downloads.mkdirs();
@@ -143,7 +144,7 @@ public class IMAPMailSystem {
                 File idxDir = new File("./downloads" + File.separator + mailBox + File.separator + Long.toString(uid) + File.separator + Integer.toString(idx));
                 idxDir.mkdirs();
                 part.saveFile(path);
-                file = URLEncoder.encode(part.getFileName(), "UTF-8");
+                file = URLEncoder.encode(MimeUtility.decodeText(part.getFileName()), "UTF-8");
                 String link = "/api/mail/download/" + mailBox + "/" + Integer.toString(idx) + "/" + file;
                 AttachmentResponseDto attachmentResponseDto = new AttachmentResponseDto();
                 attachmentResponseDto.size = part.getSize();
