@@ -1,9 +1,6 @@
 package kr.co.ggabi.springboot.controller;
 
-import kr.co.ggabi.springboot.dto.LoginDto;
-import kr.co.ggabi.springboot.dto.MembersSaveRequestDto;
-import kr.co.ggabi.springboot.dto.StatusDto;
-import kr.co.ggabi.springboot.dto.TokenDto;
+import kr.co.ggabi.springboot.dto.*;
 import kr.co.ggabi.springboot.jwt.JwtFilter;
 import kr.co.ggabi.springboot.jwt.TokenProvider;
 import kr.co.ggabi.springboot.service.CreateMemberService;
@@ -34,8 +31,9 @@ public class AuthController {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
 
     @PostMapping("/signup")
-    public Long save(@RequestBody MembersSaveRequestDto requestDto) throws IOException {
-        return createMemberService.save(requestDto);
+    public ResponseEntity<MembersSaveResponseDto> save(@RequestBody MembersSaveRequestDto requestDto) throws IOException {
+        MembersSaveResponseDto res = createMemberService.save(requestDto);
+        return new ResponseEntity<>(res, new HttpHeaders(), HttpStatus.OK);
     }
 
     @PostMapping("/login")

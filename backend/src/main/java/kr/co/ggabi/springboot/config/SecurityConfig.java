@@ -6,6 +6,8 @@ import kr.co.ggabi.springboot.jwt.JwtAuthenticationEntryPoint;
 import kr.co.ggabi.springboot.jwt.JwtSecurityConfig;
 import kr.co.ggabi.springboot.jwt.TokenProvider;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -16,7 +18,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final TokenProvider tokenProvider;
@@ -30,8 +32,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/h2-console/**", "/favicon.ico");
     }
 
+    @Value("${admin.accessIp}")
+    String ip;
+
     @Override
     protected void configure(HttpSecurity http) throws Exception{
+
         http
                 .csrf().disable()
 
@@ -52,6 +58,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .antMatchers("/api/auth/**").permitAll()
+                .antMatchers("/api/danger/**").access("hasIpAddress(\'" + ip + "\')")
                 .anyRequest().authenticated()
 
 

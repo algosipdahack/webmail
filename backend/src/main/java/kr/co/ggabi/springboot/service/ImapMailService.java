@@ -25,7 +25,7 @@ public class ImapMailService {
 
     public Map<Integer, MailboxResponseDto> showMailbox(HttpServletRequest httpServletRequest, String mailBox) throws Exception {
 
-        imapMailSystem.login("ggabi.co.kr", tokenProvider.resolveToken(httpServletRequest), mailBox);
+        imapMailSystem.login("localhost", tokenProvider.resolveToken(httpServletRequest), mailBox);
         Map<Integer, MailboxResponseDto> res = imapMailSystem.getEmailSubjects();
         imapMailSystem.logout();
 
@@ -34,7 +34,7 @@ public class ImapMailService {
 
     public MailResponseDto showMailDetails(HttpServletRequest httpServletRequest, int idx, String mailBox) throws Exception {
 
-        long id = imapMailSystem.login("ggabi.co.kr", tokenProvider.resolveToken(httpServletRequest), mailBox);
+        long id = imapMailSystem.login("localhost", tokenProvider.resolveToken(httpServletRequest), mailBox);
         int msgCount = imapMailSystem.getMessageCount();
         MailResponseDto res = imapMailSystem.getEmailDetails(id, idx, mailBox);
         imapMailSystem.logout();

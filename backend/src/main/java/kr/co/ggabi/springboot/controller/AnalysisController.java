@@ -14,5 +14,5 @@ import org.springframework.web.bind.annotation.RestController;
 public class AnalysisController {
 
     //@PostMapping("")
-    //public ResponseEntity<TokenDto>
+    //public ResponseEntity<AnalysisDto>
 }

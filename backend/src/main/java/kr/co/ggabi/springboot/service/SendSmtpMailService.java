@@ -52,8 +52,8 @@ public class SendSmtpMailService {
         String password = member.getPassword().substring(6);
 
         try{
-            props.put("mail.smtp.port", "465");
-            props.put("mail.smtp.host", "ggabi.co.kr");
+            props.put("mail.smtp.port", "25");
+            props.put("mail.smtp.host", "localhost");
             props.put("mail.smtp.socketFactory.fallback", "false");
             props.put("mail.smtp.debug", "true");
             props.put("mail.smtp.auth", "true");

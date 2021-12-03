@@ -8,6 +8,8 @@ import java.util.Optional;
 
 public interface MembersRepository extends JpaRepository<Member, Long> {
     Optional<Member> findByUsername(String username);
+    Optional<Member> findByPhone(String phone);
+    Optional<Member> findByNickname(String nickname);
     @EntityGraph(attributePaths = "authority")
     Optional<Member> findOneWithAuthorityByUsername(String username);
 }
