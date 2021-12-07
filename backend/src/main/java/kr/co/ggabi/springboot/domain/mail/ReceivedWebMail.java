@@ -18,7 +18,10 @@ public class ReceivedWebMail {
     private Long id;
 
     @Column(nullable = false)
-    private String mailId;
+    private Long mailId;
+
+    @Column(nullable = false)
+    private String username;
 
     @Builder.Default
     @Column(nullable = false)
@@ -30,8 +33,9 @@ public class ReceivedWebMail {
     @Column
     private double danger;
 
-    public ReceivedWebMail(String mailId, int spamFlag, String file, float danger){
+    public ReceivedWebMail(Long mailId, String username, int spamFlag, String file, float danger){
         this.mailId = mailId;
+        this.username = username;
         this.spamFlag = spamFlag;
         this.file = file;
         this.danger = danger;
