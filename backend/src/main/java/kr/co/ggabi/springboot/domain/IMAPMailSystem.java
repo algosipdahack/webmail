@@ -1,12 +1,15 @@
 package kr.co.ggabi.springboot.domain;
 
+import kr.co.ggabi.springboot.domain.mail.ReceivedWebMail;
 import kr.co.ggabi.springboot.domain.users.Member;
 import kr.co.ggabi.springboot.dto.AttachmentResponseDto;
 import kr.co.ggabi.springboot.dto.MailResponseDto;
 import kr.co.ggabi.springboot.dto.MailboxResponseDto;
 import kr.co.ggabi.springboot.jwt.TokenProvider;
 import kr.co.ggabi.springboot.repository.MembersRepository;
+import kr.co.ggabi.springboot.repository.ReceivedWebMailRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.mail.*;
@@ -25,6 +28,7 @@ public class IMAPMailSystem {
 
     private final TokenProvider tokenProvider;
     private final MembersRepository membersRepository;
+    private final ReceivedWebMailRepository receivedWebMailRepository;
 
     private Session session;
     private Store store;
@@ -32,7 +36,8 @@ public class IMAPMailSystem {
     // hardcoding protocol and the folder
     // it can be parameterized and enhanced as required
     private String protocol = "imaps";
-    private String file = "INBOX";
+    @Value("${mailServer.domain}")
+    String domain;
 
     public boolean isLoggedIn() {
         return store.isConnected();
@@ -85,6 +90,8 @@ public class IMAPMailSystem {
             mailboxResponseDto.from = from.getAddress();
             mailboxResponseDto.date = m.getReceivedDate();
             mailboxResponseDto.read = false;
+            InternetAddress recipient = (InternetAddress) m.getAllRecipients()[0];
+            mailboxResponseDto.to = recipient.getAddress();
             res.put(m.getMessageNumber(), mailboxResponseDto);
         }
         for (Message m : readMessages) {
@@ -95,6 +102,8 @@ public class IMAPMailSystem {
             mailboxResponseDto.from = from.getAddress();
             mailboxResponseDto.date = m.getReceivedDate();
             mailboxResponseDto.read = true;
+            InternetAddress recipient = (InternetAddress) m.getAllRecipients()[0];
+            mailboxResponseDto.to = recipient.getAddress();
             res.put(m.getMessageNumber(), mailboxResponseDto);
         }
 
@@ -110,18 +119,43 @@ public class IMAPMailSystem {
         res.from = from.getAddress();
         res.date = m.getReceivedDate();
         res.contentType = m.getContentType();
+        InternetAddress recipient = (InternetAddress) m.getAllRecipients()[0];
+        res.to = recipient.getAddress();
         Object content = m.getContent();
         InputStream in = m.getInputStream();
-        if(content instanceof MimeMultipart) {
+        if (content instanceof MimeMultipart) {
             res.content = getTextFromMimeMultipart((MimeMultipart) content);
-            if(res.content.equals("")){
+            if (res.content.equals("")) {
                 res.content = getPlainTextFromMimeMultipart((MimeMultipart) content);
             }
             res.file = downloadAttachments(m, uid, idx, mailBox);
-        }
-        else {
+        } else {
             res.content = (String) content;
             res.file = new HashMap<>();
+        }
+        String username = membersRepository.findById(uid).get().getUsername();
+        if (mailBox.equals("INBOX")) {
+            int flagMax = 0;
+            Optional<List<ReceivedWebMail>> optional = receivedWebMailRepository.findAllByUsernameAndMailId(username, (long) idx);
+            if (optional.isPresent()) {
+                List<ReceivedWebMail> mailList = optional.get();
+                for (ReceivedWebMail mail : mailList) {
+                    try {
+                        if (mail.getFile() != null) {
+                            System.out.println(URLEncoder.encode(mail.getFile(), "UTF-8"));
+                            AttachmentResponseDto attachment = res.file.get(URLEncoder.encode(mail.getFile(), "UTF-8"));
+                            attachment.isAnalysed = true;
+                            attachment.danger = mail.getDanger();
+                            res.file.replace(mail.getFile(), attachment);
+                        }
+                        if (flagMax < mail.getSpamFlag()) flagMax = mail.getSpamFlag();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        continue;
+                    }
+                }
+            }
+            res.flag = flagMax;
         }
         return res;
     }
@@ -130,10 +164,16 @@ public class IMAPMailSystem {
         Map<String, AttachmentResponseDto> downloadedAttachments = new HashMap<>();
         Multipart multipart = (Multipart) message.getContent();
         int numberOfParts = multipart.getCount();
+        String file;
         for (int partCount = 0; partCount < numberOfParts; partCount++) {
             MimeBodyPart part = (MimeBodyPart) multipart.getBodyPart(partCount);
             if (Part.ATTACHMENT.equalsIgnoreCase(part.getDisposition())) {
-                String file = MimeUtility.decodeText(part.getFileName()).replace(' ', '+');
+                String origin = part.getFileName();
+                if(origin.substring(0,2).equals("=?") && origin.substring(origin.length() - 2).equals("?=")) {
+                    file = MimeUtility.decodeText(part.getFileName()).replace(' ', '+');
+                } else{
+                    file = part.getFileName().replace(' ', '+');
+                }
                 String path = "./downloads" + File.separator + mailBox + File.separator + Long.toString(uid) + File.separator + Integer.toString(idx) + File.separator + file;
                 File downloads = new File("./downloads");
                 downloads.mkdirs();
@@ -144,7 +184,7 @@ public class IMAPMailSystem {
                 File idxDir = new File("./downloads" + File.separator + mailBox + File.separator + Long.toString(uid) + File.separator + Integer.toString(idx));
                 idxDir.mkdirs();
                 part.saveFile(path);
-                file = URLEncoder.encode(MimeUtility.decodeText(part.getFileName()), "UTF-8");
+                file = URLEncoder.encode(MimeUtility.decodeText(part.getFileName()).replace(' ', '+'), "UTF-8");
                 String link = "/api/mail/download/" + mailBox + "/" + Integer.toString(idx) + "/" + file;
                 AttachmentResponseDto attachmentResponseDto = new AttachmentResponseDto();
                 attachmentResponseDto.size = part.getSize();
@@ -208,7 +248,7 @@ public class IMAPMailSystem {
             session = Session.getInstance(props, null);
         }
         store = session.getStore("imap");
-        store.connect(host, username + "@ggabi.co.kr", password);
+        store.connect(host, username + "@" + domain, password);
         folder = store.getFolder(mailbox); //inbox는 받은 메일함을 의미
         folder.open(Folder.READ_WRITE);
         //folder.open(Folder.READ_ONLY); //읽기 전용

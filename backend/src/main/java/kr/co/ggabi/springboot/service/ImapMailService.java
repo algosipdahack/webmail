@@ -7,6 +7,7 @@ import kr.co.ggabi.springboot.dto.MailboxResponseDto;
 import kr.co.ggabi.springboot.jwt.TokenProvider;
 import kr.co.ggabi.springboot.repository.MembersRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.mail.*;
@@ -23,9 +24,12 @@ public class ImapMailService {
     private final TokenProvider tokenProvider;
     private final MembersRepository membersRepository;
 
+    @Value("${mailServer.host}")
+    String host;
+
     public Map<Integer, MailboxResponseDto> showMailbox(HttpServletRequest httpServletRequest, String mailBox) throws Exception {
 
-        imapMailSystem.login("localhost", tokenProvider.resolveToken(httpServletRequest), mailBox);
+        imapMailSystem.login(host, tokenProvider.resolveToken(httpServletRequest), mailBox);
         Map<Integer, MailboxResponseDto> res = imapMailSystem.getEmailSubjects();
         imapMailSystem.logout();
 
@@ -34,7 +38,7 @@ public class ImapMailService {
 
     public MailResponseDto showMailDetails(HttpServletRequest httpServletRequest, int idx, String mailBox) throws Exception {
 
-        long id = imapMailSystem.login("localhost", tokenProvider.resolveToken(httpServletRequest), mailBox);
+        long id = imapMailSystem.login(host, tokenProvider.resolveToken(httpServletRequest), mailBox);
         int msgCount = imapMailSystem.getMessageCount();
         MailResponseDto res = imapMailSystem.getEmailDetails(id, idx, mailBox);
         imapMailSystem.logout();

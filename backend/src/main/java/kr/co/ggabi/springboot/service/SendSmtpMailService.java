@@ -5,6 +5,7 @@ import kr.co.ggabi.springboot.domain.users.Member;
 import kr.co.ggabi.springboot.jwt.TokenProvider;
 import kr.co.ggabi.springboot.repository.MembersRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -41,6 +42,10 @@ public class SendSmtpMailService {
         }
     }
 
+    @Value("${mailServer.host}")
+    String host;
+    @Value("${mailServer.domain}")
+    String domain;
 
     public Map<String, String> sendMail(HttpServletRequest request, MailParam param) {
 
@@ -53,16 +58,16 @@ public class SendSmtpMailService {
 
         try{
             props.put("mail.smtp.port", "25");
-            props.put("mail.smtp.host", "localhost");
+            props.put("mail.smtp.host", host);
             props.put("mail.smtp.socketFactory.fallback", "false");
             props.put("mail.smtp.debug", "true");
             props.put("mail.smtp.auth", "true");
 
-            Authenticator auth = new SMTPAuthenticator(username + "@ggabi.co.kr", password);
+            Authenticator auth = new SMTPAuthenticator(username + "@" + domain, password);
             Session mailSession = Session.getDefaultInstance(props, auth);
 
             MimeMessage message = new MimeMessage(mailSession);
-            message.setFrom(username + "@ggabi.co.kr");
+            message.setFrom(username + "@" + domain);
             for(String s: param.receiver) {
                 message.addRecipients(Message.RecipientType.TO, String.valueOf(new InternetAddress(s)));
             }

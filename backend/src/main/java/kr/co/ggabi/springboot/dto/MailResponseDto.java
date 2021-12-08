@@ -7,9 +7,11 @@ public class MailResponseDto {
     public String subject;
     public String nickname;
     public String from;
+    public String to;
     public Date date;
     public String contentType;
     public String content;
     public Map<String, AttachmentResponseDto> file;
+    public int flag;
 
 }

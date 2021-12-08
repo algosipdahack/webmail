@@ -5,7 +5,6 @@ import kr.co.ggabi.springboot.jwt.JwtAccessDeniedHandler;
 import kr.co.ggabi.springboot.jwt.JwtAuthenticationEntryPoint;
 import kr.co.ggabi.springboot.jwt.JwtSecurityConfig;
 import kr.co.ggabi.springboot.jwt.TokenProvider;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
@@ -58,7 +57,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .antMatchers("/api/auth/**").permitAll()
-                .antMatchers("/api/danger/**").access("hasIpAddress(\'" + ip + "\')")
+                .antMatchers("/api/danger").permitAll()//access("hasIpAddress('127.0.0.1')")
                 .anyRequest().authenticated()
 
 

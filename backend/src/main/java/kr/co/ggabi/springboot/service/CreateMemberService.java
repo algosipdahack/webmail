@@ -19,13 +19,15 @@ public class CreateMemberService {
 
     @Value("${james.dir}")
     private String dir;
+    @Value("${mailServer.domain}")
+    String domain;
 
     @Transactional
     public MembersSaveResponseDto save(MembersSaveRequestDto requestDto) throws IOException {
         String username = requestDto.toEntity().getUsername();
         String password = requestDto.toEntity().getPassword();
-        System.out.println(dir + " AddUser " + username + "@ggabi.co.kr " + password.substring(6));
-        Process process = Runtime.getRuntime().exec(dir + " AddUser " + username + "@ggabi.co.kr " + password.substring(6));
+        System.out.println(dir + " AddUser " + username + "@" + domain + " " + password.substring(6));
+        Process process = Runtime.getRuntime().exec(dir + " AddUser " + username + "@" + domain + " " + password.substring(6));
         MembersSaveResponseDto res = new MembersSaveResponseDto("fail", "error");
         if(membersRepository.findByUsername(username).isPresent()){
             res.setMessage("중복 ID입니다.");
