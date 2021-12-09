@@ -5,5 +5,5 @@ import lombok.Getter;
 @Getter
 public class File {
     String filename;
-    double danger;
+    double danger = -1;
 }

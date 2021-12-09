@@ -9,4 +9,6 @@ public class MailboxResponseDto {
     public String to;
     public Date date;
     public Boolean read;
+    public int spamFlag;
+    public double danger = -1;
 }

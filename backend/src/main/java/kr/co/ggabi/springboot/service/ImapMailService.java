@@ -29,8 +29,8 @@ public class ImapMailService {
 
     public Map<Integer, MailboxResponseDto> showMailbox(HttpServletRequest httpServletRequest, String mailBox) throws Exception {
 
-        imapMailSystem.login(host, tokenProvider.resolveToken(httpServletRequest), mailBox);
-        Map<Integer, MailboxResponseDto> res = imapMailSystem.getEmailSubjects();
+        long id = imapMailSystem.login(host, tokenProvider.resolveToken(httpServletRequest), mailBox);
+        Map<Integer, MailboxResponseDto> res = imapMailSystem.getEmailSubjects(id, mailBox);
         imapMailSystem.logout();
 
         return res;

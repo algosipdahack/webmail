@@ -60,7 +60,7 @@ public class IMAPMailSystem {
         return null;
     }
 
-    public Map<Integer, MailboxResponseDto> getEmailSubjects() throws MessagingException {
+    public Map<Integer, MailboxResponseDto> getEmailSubjects(long id, String mailBox) throws MessagingException {
         Map<Integer, MailboxResponseDto> res = new HashMap<>();
         Message[] unreadMessages = folder.search(new FlagTerm(new Flags(Flags.Flag.SEEN), false));
         Message[] messages = folder.getMessages();
@@ -82,6 +82,10 @@ public class IMAPMailSystem {
 
         Flags seenFlag = new Flags(Flags.Flag.SEEN);
         folder.setFlags(unreadMessages, seenFlag, false);
+
+
+        String username = membersRepository.findById(id).get().getUsername();
+
         for (Message m : unreadMessages) {
             MailboxResponseDto mailboxResponseDto = new MailboxResponseDto();
             mailboxResponseDto.subject = m.getSubject();
@@ -92,6 +96,26 @@ public class IMAPMailSystem {
             mailboxResponseDto.read = false;
             InternetAddress recipient = (InternetAddress) m.getAllRecipients()[0];
             mailboxResponseDto.to = recipient.getAddress();
+            if(mailBox.equals("INBOX")) {
+                int flagMax = 0;
+                double dangerMax = -1;
+                long idx = m.getMessageNumber();
+                Optional<List<ReceivedWebMail>> optional = receivedWebMailRepository.findAllByUsernameAndMailId(username, idx);
+                if (optional.isPresent()) {
+                    List<ReceivedWebMail> mailList = optional.get();
+                    for (ReceivedWebMail mail : mailList) {
+                        try {
+                            if (dangerMax < mail.getDanger()) dangerMax = mail.getDanger();
+                            if (flagMax < mail.getSpamFlag()) flagMax = mail.getSpamFlag();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            continue;
+                        }
+                    }
+                }
+                mailboxResponseDto.danger = dangerMax;
+                mailboxResponseDto.spamFlag = flagMax;
+            }
             res.put(m.getMessageNumber(), mailboxResponseDto);
         }
         for (Message m : readMessages) {
@@ -104,6 +128,29 @@ public class IMAPMailSystem {
             mailboxResponseDto.read = true;
             InternetAddress recipient = (InternetAddress) m.getAllRecipients()[0];
             mailboxResponseDto.to = recipient.getAddress();
+            if(mailBox.equals("INBOX")) {
+                int flagMax = 0;
+                double dangerMax = -1;
+                long idx = m.getMessageNumber();
+                Optional<List<ReceivedWebMail>> optional = receivedWebMailRepository.findAllByUsernameAndMailId(username, idx);
+                if (optional.isPresent()) {
+                    List<ReceivedWebMail> mailList = optional.get();
+                    for (ReceivedWebMail mail : mailList) {
+                        try {
+                            System.out.println(mail.getDanger());
+                            System.out.println(mail.getSpamFlag());
+                            if (dangerMax < mail.getDanger()) dangerMax = mail.getDanger();
+                            if (flagMax < mail.getSpamFlag()) flagMax = mail.getSpamFlag();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            continue;
+                        }
+                    }
+                }
+                System.out.println(m.getMessageNumber());
+                mailboxResponseDto.danger = dangerMax;
+                mailboxResponseDto.spamFlag = flagMax;
+            }
             res.put(m.getMessageNumber(), mailboxResponseDto);
         }
 

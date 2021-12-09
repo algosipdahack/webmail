@@ -28,8 +28,9 @@ public class ReceivedWebMail {
     @Column
     private String file;
 
+    @Builder.Default
     @Column
-    private double danger;
+    private double danger = -1;
 
     public ReceivedWebMail(Long mailId, String username, int spamFlag, String file, float danger){
         this.mailId = mailId;

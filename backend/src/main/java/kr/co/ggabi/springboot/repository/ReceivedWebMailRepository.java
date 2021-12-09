@@ -10,6 +10,7 @@ import java.util.Optional;
 public interface ReceivedWebMailRepository extends JpaRepository<ReceivedWebMail, Long> {
 
     Optional<List<ReceivedWebMail>> findAllByUsernameAndMailId(String username, long idx);
+    Optional<List<ReceivedWebMail>> findAllByIdAndMailId(long id, long idx);
     Optional<List<ReceivedWebMail>> findAllByUsername(String username);
 
 }
