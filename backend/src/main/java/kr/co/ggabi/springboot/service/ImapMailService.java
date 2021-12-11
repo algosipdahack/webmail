@@ -31,7 +31,7 @@ public class ImapMailService {
 
         long id = imapMailSystem.login(host, tokenProvider.resolveToken(httpServletRequest), mailBox);
         Map<Integer, MailboxResponseDto> res = imapMailSystem.getEmailSubjects(id, mailBox);
-        imapMailSystem.logout();
+        imapMailSystem.logout(id);
 
         return res;
     }
@@ -41,7 +41,25 @@ public class ImapMailService {
         long id = imapMailSystem.login(host, tokenProvider.resolveToken(httpServletRequest), mailBox);
         int msgCount = imapMailSystem.getMessageCount();
         MailResponseDto res = imapMailSystem.getEmailDetails(id, idx, mailBox);
-        imapMailSystem.logout();
+        imapMailSystem.logout(id);
+
+        return res;
+    }
+
+    public Map<String, String> setMail(HttpServletRequest httpServletRequest, String mailBox, List<Integer> mailIdList, Boolean seen) throws Exception {
+
+        long id = imapMailSystem.login(host, tokenProvider.resolveToken(httpServletRequest), mailBox);
+        Map<String, String> res = imapMailSystem.setMail(mailIdList, seen);
+        imapMailSystem.logout(id);
+
+        return res;
+    }
+
+    public Map<String, String> trashMail(HttpServletRequest httpServletRequest, String mailBox, List<Integer> mailIdList) throws Exception {
+
+        long id = imapMailSystem.login(host, tokenProvider.resolveToken(httpServletRequest), mailBox);
+        Map<String, String> res = imapMailSystem.trashMail(mailIdList);
+        imapMailSystem.logout(id, true);
 
         return res;
     }

@@ -18,6 +18,7 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.internet.MimeUtility;
 import javax.mail.search.FlagTerm;
+import javax.mail.search.MessageNumberTerm;
 import java.io.*;
 import java.net.URLEncoder;
 import java.util.*;
@@ -61,6 +62,8 @@ public class IMAPMailSystem {
     }
 
     public Map<Integer, MailboxResponseDto> getEmailSubjects(long id, String mailBox) throws MessagingException {
+        if(id == -1) return new HashMap<>();
+
         Map<Integer, MailboxResponseDto> res = new HashMap<>();
         Message[] unreadMessages = folder.search(new FlagTerm(new Flags(Flags.Flag.SEEN), false));
         Message[] messages = folder.getMessages();
@@ -157,7 +160,33 @@ public class IMAPMailSystem {
         return res;
     }
 
+    public Map<String, String> setMail(List<Integer> mailIdList, Boolean seen) throws MessagingException {
+
+        for(Integer i: mailIdList) {
+            Message[] message = folder.search(new MessageNumberTerm(i));
+            Flags seenFlag = new Flags(Flags.Flag.SEEN);
+            folder.setFlags(message, seenFlag, seen);
+        }
+
+        Map<String, String> res = new HashMap<>();
+        res.put("status", "success");
+        return res;
+    }
+
+    public Map<String, String> trashMail(List<Integer> mailIdList) throws MessagingException {
+        for(Integer i: mailIdList) {
+            Message[] message = folder.search(new MessageNumberTerm(i));
+            Flags delFlag = new Flags(Flags.Flag.DELETED);
+            folder.setFlags(message, delFlag, true);
+        }
+
+        Map<String, String> res = new HashMap<>();
+        res.put("status", "success");
+        return res;
+    }
+
     public MailResponseDto getEmailDetails(long uid, int idx, String mailBox) throws MessagingException, IOException {
+        if(uid == -1) return new MailResponseDto();
         Message m = folder.getMessage(idx);
         MailResponseDto res = new MailResponseDto();
         res.subject = m.getSubject();
@@ -282,7 +311,9 @@ public class IMAPMailSystem {
 
     public long login(String host, String token, String mailbox) throws Exception {
         String username = tokenProvider.getUsernameFromToken(token);
-        Member member = membersRepository.findByUsername(username).get();
+        Optional<Member> optional = membersRepository.findByUsername(username);
+        if(!optional.isPresent()) return -1;
+        Member member = optional.get();
         String password = member.getPassword().substring(6);
         if (session == null) {
             Properties props = null;
@@ -302,9 +333,19 @@ public class IMAPMailSystem {
         return member.getId();
     }
 
-    public void logout() throws MessagingException {
-        folder.close(false);
-        store.close();
+    public void logout(long id) throws MessagingException {
+        if(id != -1) {
+            folder.close(false);
+            store.close();
+        }
+        store = null;
+        session = null;
+    }
+    public void logout(long id, boolean expunge) throws MessagingException {
+        if(id != -1) {
+            folder.close(expunge);
+            store.close();
+        }
         store = null;
         session = null;
     }

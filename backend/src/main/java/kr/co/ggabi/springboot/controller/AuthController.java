@@ -49,12 +49,5 @@ public class AuthController {
         return new ResponseEntity<>(tokenDto, new HttpHeaders(), HttpStatus.OK);
     }
 
-    @GetMapping("/status")
-    public Map<String, String> status(HttpServletRequest httpServletRequest, StatusDto statusDto){
-        String token = tokenProvider.resolveToken(httpServletRequest);
-        Map<String, String> res = new HashMap<>();
-        res.put("username", tokenProvider.getUsernameFromToken(token));
-        res.put("auth", tokenProvider.getAuthFromToken(token));
-        return res;
-    }
+
 }
