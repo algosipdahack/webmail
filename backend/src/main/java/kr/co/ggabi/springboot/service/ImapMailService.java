@@ -1,11 +1,14 @@
 package kr.co.ggabi.springboot.service;
 
 import kr.co.ggabi.springboot.domain.IMAPMailSystem;
+import kr.co.ggabi.springboot.domain.mail.WebMail;
 import kr.co.ggabi.springboot.domain.users.Member;
+import kr.co.ggabi.springboot.dto.AttachmentResponseDto;
 import kr.co.ggabi.springboot.dto.MailResponseDto;
 import kr.co.ggabi.springboot.dto.MailboxResponseDto;
 import kr.co.ggabi.springboot.jwt.TokenProvider;
 import kr.co.ggabi.springboot.repository.MembersRepository;
+import kr.co.ggabi.springboot.repository.WebMailRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +25,7 @@ public class ImapMailService {
     private final IMAPMailSystem imapMailSystem;
     private final TokenProvider tokenProvider;
     private final MembersRepository membersRepository;
+    private final WebMailRepository webMailRepository;
 
     public Map<Integer, MailboxResponseDto> showMailbox(HttpServletRequest httpServletRequest) throws Exception {
 
@@ -33,11 +37,29 @@ public class ImapMailService {
     }
 
     public MailResponseDto showMailDetails(HttpServletRequest httpServletRequest, int idx) throws Exception {
+        String token = tokenProvider.resolveToken(httpServletRequest);
 
-        long id = imapMailSystem.login("ggabi.co.kr", tokenProvider.resolveToken(httpServletRequest));
+        long id = imapMailSystem.login("ggabi.co.kr", token);
         int msgCount = imapMailSystem.getMessageCount();
         MailResponseDto res = imapMailSystem.getEmailDetails(id, idx);
         imapMailSystem.logout();
+
+        String sender = res.from;
+        String receivers = tokenProvider.getUsernameFromToken(token);
+
+        if (webMailRepository.findByReceiversAndMailId(receivers, Integer.toString(idx)).isPresent()) {
+            return res;
+        }
+
+        // Save
+        StringBuilder stringBuilder = new StringBuilder();
+        res.file.forEach((fileName, file) -> {
+            stringBuilder.append(fileName).append(" ");
+        });
+        String files = stringBuilder.toString().trim();
+
+        WebMail webMail = new WebMail(Integer.toString(idx), receivers, sender, res.subject, res.date, files, true);
+        webMailRepository.save(webMail);
 
         return res;
     }

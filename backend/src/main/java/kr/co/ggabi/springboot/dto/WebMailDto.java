@@ -4,20 +4,23 @@ import kr.co.ggabi.springboot.domain.mail.WebMail;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 
 @Getter
 @NoArgsConstructor
 public class WebMailDto {
 
-    private String mailId;
-    private String receiver;
-    private String sender;
-    private String subject;
-    private Date date;
-    private String file;
-    private boolean isReceived = false;
+    public String mailId;
+    public String receiver;
+    public String sender;
+    public String subject;
+    public Date date;
+    public String file;
+    public boolean isReceived;
 
     @Builder
     public WebMailDto(String mailId, String receiver, String sender,
@@ -34,11 +37,11 @@ public class WebMailDto {
     public WebMail toEntity(){
         return WebMail.builder()
                 .mailId(mailId)
-                .receiver(receiver)
+                .receivers(receiver)
                 .sender(sender)
                 .subject(subject)
                 .date(date)
-                .file(file)
+                .files(file)
                 .isReceived(isReceived)
                 .build();
     }
