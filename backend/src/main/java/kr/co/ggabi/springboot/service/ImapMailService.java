@@ -59,7 +59,7 @@ public class ImapMailService {
 
         long id = imapMailSystem.login(host, tokenProvider.resolveToken(httpServletRequest), mailBox);
         Map<String, String> res = imapMailSystem.trashMail(mailIdList);
-        imapMailSystem.logout(id, true);
+        imapMailSystem.logout(id);
 
         return res;
     }

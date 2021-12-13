@@ -65,8 +65,9 @@ public class IMAPMailSystem {
         if(id == -1) return new HashMap<>();
 
         Map<Integer, MailboxResponseDto> res = new HashMap<>();
-        Message[] unreadMessages = folder.search(new FlagTerm(new Flags(Flags.Flag.SEEN), false));
-        Message[] messages = folder.getMessages();
+        Message[] unreadMessages = folder.search(new FlagTerm(new Flags(Flags.Flag.DELETED), false),
+                folder.search(new FlagTerm(new Flags(Flags.Flag.SEEN), false)));
+        Message[] messages = folder.search(new FlagTerm(new Flags(Flags.Flag.DELETED), false), folder.getMessages());
         Set<Integer> unreadMessagesValSet = new HashSet<>();
         Set<Integer> readMessagesValSet = new HashSet<>();
 
