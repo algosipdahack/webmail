@@ -27,7 +27,7 @@ public class CreateMemberService {
         String username = requestDto.toEntity().getUsername();
         String password = requestDto.toEntity().getPassword();
         System.out.println(dir + " AddUser " + username + "@" + domain + " " + password.substring(6));
-        //Process process = Runtime.getRuntime().exec(dir + " AddUser " + username + "@" + domain + " " + password.substring(6));
+        Process process = Runtime.getRuntime().exec(dir + " AddUser " + username + "@" + domain + " " + password.substring(6));
         MembersSaveResponseDto res = new MembersSaveResponseDto("fail", "error");
         if(membersRepository.findByUsername(username).isPresent()){
             res.setMessage("중복 ID입니다.");

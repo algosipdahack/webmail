@@ -4,14 +4,19 @@ package kr.co.ggabi.springboot.domain.users;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
 import java.util.Date;
 
+@Setter
 @Getter
 @NoArgsConstructor
 @Entity
+@DynamicUpdate
 public class Member {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,10 +45,11 @@ public class Member {
 
     private String position;
 
-    private Boolean isPermitted = false;
-
     @Enumerated(EnumType.STRING)
     private Authority authority;
+
+    @CreationTimestamp
+    private Date isCreated;
 
     @Builder
     public Member(String username, String password, String nickname, String phone, Date birthday,
@@ -57,6 +63,6 @@ public class Member {
         this.gender = gender;
         this.department = department;
         this.position = position;
-        this.authority = authority;
+        this.authority = Authority.ROLE_BEFORE;
     }
 }
