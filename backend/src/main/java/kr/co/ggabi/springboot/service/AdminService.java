@@ -3,6 +3,7 @@ package kr.co.ggabi.springboot.service;
 import kr.co.ggabi.springboot.domain.users.Authority;
 import kr.co.ggabi.springboot.domain.users.Member;
 import kr.co.ggabi.springboot.dto.MemberResponseDto;
+import kr.co.ggabi.springboot.dto.UserAuthorityDto;
 import kr.co.ggabi.springboot.repository.MembersRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,22 +24,26 @@ public class AdminService {
         return res;
     }
 
-    public Map<String, String> setUserAuthority(int id, Authority authority){
-        Map<String, String> res = new HashMap<>();
-        try {
-            Optional<Member> optional = membersRepository.findById((long)id);
-            if (optional.isPresent()) {
-                Member member = optional.get();
-                member.setAuthority(authority);
-                membersRepository.save(member);
-                res.put("status", "success");
-            } else {
-                res.put("status", "fail");
-                res.put("error", "No user");
+    public Map<Integer, Map<String, String>> setUserAuthority(List<UserAuthorityDto> dto){
+        Map<Integer, Map<String, String>> res = new HashMap<>();
+        for(UserAuthorityDto userAuthority: dto) {
+            Map<String, String> inner = new HashMap<>();
+            try {
+                Optional<Member> optional = membersRepository.findById((long) userAuthority.getId());
+                if (optional.isPresent()) {
+                    Member member = optional.get();
+                    member.setAuthority(userAuthority.getAuthority());
+                    membersRepository.save(member);
+                    inner.put("status", "success");
+                } else {
+                    inner.put("status", "fail");
+                    inner.put("error", "No user");
+                }
+            } catch (Exception e) {
+                inner.put("status", "fail");
+                inner.put("error", e.getMessage());
             }
-        } catch (Exception e){
-            res.put("status", "fail");
-            res.put("error", e.getMessage());
+            res.put(userAuthority.getId(), inner);
         }
         return res;
     }

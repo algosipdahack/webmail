@@ -4,7 +4,7 @@ import kr.co.ggabi.springboot.domain.users.Authority;
 import lombok.Getter;
 
 @Getter
-public class SetUserAuthorityDto {
+public class UserAuthorityDto {
     int id;
     Authority authority;
 }
