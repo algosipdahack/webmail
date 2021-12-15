@@ -65,11 +65,12 @@ public class IMAPMailSystem {
         if(id == -1) return new HashMap<>();
 
         Map<Integer, MailboxResponseDto> res = new HashMap<>();
-        Message[] unreadMessages = folder.search(new FlagTerm(new Flags(Flags.Flag.DELETED), false),
-                folder.search(new FlagTerm(new Flags(Flags.Flag.SEEN), false)));
-        Message[] messages = folder.search(new FlagTerm(new Flags(Flags.Flag.DELETED), false));
+        Message[] unreadMessages = folder.search(new FlagTerm(new Flags(Flags.Flag.SEEN), false));
+        Message[] messages = folder.getMessages();
+        Message[] trashMsgs = folder.search(new FlagTerm(new Flags("trash"), true));
         Set<Integer> unreadMessagesValSet = new HashSet<>();
         Set<Integer> readMessagesValSet = new HashSet<>();
+        Set<Integer> trashMessagesValSet = new HashSet<>();
 
         for (Message m : unreadMessages) {
             unreadMessagesValSet.add(m.getMessageNumber());
@@ -84,6 +85,16 @@ public class IMAPMailSystem {
             System.out.print(' ');
         }
         System.out.println();
+
+        for (Message m : trashMsgs) {
+            trashMessagesValSet.add(m.getMessageNumber());
+            System.out.print(m.getMessageNumber());
+            System.out.print(' ');
+        }
+        System.out.println();
+
+        readMessagesValSet.removeAll(trashMessagesValSet);
+        unreadMessagesValSet.removeAll(trashMessagesValSet);
 
         readMessagesValSet.removeAll(unreadMessagesValSet);
         Integer[] readMessagesValArr = new Integer[readMessagesValSet.size()];
@@ -184,8 +195,8 @@ public class IMAPMailSystem {
     public Map<String, String> trashMail(List<Integer> mailIdList) throws MessagingException {
         for(Integer i: mailIdList) {
             Message[] message = folder.search(new MessageNumberTerm(i));
-            Flags delFlag = new Flags(Flags.Flag.DELETED);
-            folder.setFlags(message, delFlag, true);
+            Flags trashFlag = new Flags("trash");
+            folder.setFlags(message, trashFlag, true);
         }
 
         Map<String, String> res = new HashMap<>();
@@ -203,8 +214,21 @@ public class IMAPMailSystem {
         res.from = from.getAddress();
         res.date = m.getReceivedDate();
         res.contentType = m.getContentType();
-        InternetAddress recipient = (InternetAddress) m.getAllRecipients()[0];
-        res.to = recipient.getAddress();
+        res.to = new ArrayList<>();
+        res.CC = new ArrayList<>();
+        for(Address addr: m.getRecipients(Message.RecipientType.TO)){
+            InternetAddress recipient = (InternetAddress) addr;
+            res.to.add(recipient.getAddress());
+            System.out.println(recipient.getAddress());
+        }
+        Address[] CC = m.getRecipients(Message.RecipientType.CC);
+        if(CC != null) {
+            for (Address addr : CC) {
+                InternetAddress recipient = (InternetAddress) addr;
+                res.CC.add(recipient.getAddress());
+            }
+        }
+
         Object content = m.getContent();
         InputStream in = m.getInputStream();
         if (content instanceof MimeMultipart) {
@@ -267,7 +291,8 @@ public class IMAPMailSystem {
                 uidDir.mkdirs();
                 File idxDir = new File("./downloads" + File.separator + mailBox + File.separator + Long.toString(uid) + File.separator + Integer.toString(idx));
                 idxDir.mkdirs();
-                part.saveFile(path);
+                File myFile = new File(path);
+                if(!myFile.exists()) part.saveFile(path);
                 file = URLEncoder.encode(MimeUtility.decodeText(part.getFileName()).replace(' ', '+'), "UTF-8");
                 String link = "/api/mail/download/" + mailBox + "/" + Integer.toString(idx) + "/" + file;
                 AttachmentResponseDto attachmentResponseDto = new AttachmentResponseDto();
@@ -331,8 +356,13 @@ public class IMAPMailSystem {
                 props = new Properties();
             }
             props.setProperty("mail.imap.ssl.enable", "false");
+            props.put("mail.imap.partialfetch",false);
+            props.put("mail.imap.fetchsize", "1048576");
+            props.put("mail.imaps.partialfetch", false);
+            props.put("mail.imaps.fetchsize", "1048576");
             session = Session.getInstance(props, null);
         }
+
         store = session.getStore("imap");
         store.connect(host, username + "@" + domain, password);
         folder = store.getFolder(mailbox); //inbox는 받은 메일함을 의미
