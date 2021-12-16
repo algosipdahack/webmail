@@ -11,24 +11,30 @@ import java.util.Date;
 @NoArgsConstructor
 public class WebMailDto {
 
-    private String mailId;
-    private String receiver;
-    private String sender;
-    private String subject;
-    private Date date;
-    private String file;
-    private boolean isReceived = false;
+    public int mailId;
+    public String receiver;
+    public String sender;
+    public String subject;
+    public Date date;
+    public String files;
+    public boolean isReceived = false;
+    public int spamFlag;
+    public double danger;
+    public boolean dangerURL;
 
     @Builder
-    public WebMailDto(String mailId, String receiver, String sender,
-                      String subject, Date date, String file, boolean isReceived){
+    public WebMailDto(int mailId, String receiver, String sender, String subject,
+                      Date date, String files, boolean isReceived, int spamFlag, double danger, boolean dangerURL){
         this.mailId = mailId;
         this.receiver = receiver;
         this.sender = sender;
         this.subject = subject;
         this.date = date;
-        this.file = file;
+        this.files = files;
         this.isReceived = isReceived;
+        this.spamFlag = spamFlag;
+        this.danger = danger;
+        this.dangerURL = dangerURL;
     }
 
     public WebMail toEntity(){
@@ -38,8 +44,11 @@ public class WebMailDto {
                 .sender(sender)
                 .subject(subject)
                 .date(date)
-                .file(file)
+                .files(files)
                 .isReceived(isReceived)
+                .spamFlag(spamFlag)
+                .danger(danger)
+                .dangerURL(dangerURL)
                 .build();
     }
 

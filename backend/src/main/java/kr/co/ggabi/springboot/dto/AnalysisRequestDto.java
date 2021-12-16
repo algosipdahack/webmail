@@ -8,4 +8,5 @@ public class AnalysisRequestDto {
     int idx;
     int spamFlag;
     File[] files;
+    boolean dangerURL;
 }

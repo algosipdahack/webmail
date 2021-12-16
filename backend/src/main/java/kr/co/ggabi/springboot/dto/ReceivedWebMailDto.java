@@ -13,13 +13,15 @@ public class ReceivedWebMailDto {
     private int spamFlag = 0;
     private String file;
     private double danger;
+    private boolean dangerURL;
 
-    @Builder ReceivedWebMailDto(Long mailId, String username, int spamFlag, String file, double danger){
+    @Builder ReceivedWebMailDto(Long mailId, String username, int spamFlag, String file, double danger, boolean URL){
         this.mailId = mailId;
         this.username = username;
         this.spamFlag = spamFlag;
         this.file = file;
         this.danger = danger;
+        this.dangerURL = URL;
     }
 
     public ReceivedWebMail toEntity(){
@@ -29,6 +31,7 @@ public class ReceivedWebMailDto {
                 .spamFlag(spamFlag)
                 .file(file)
                 .danger(danger)
+                .dangerURL(dangerURL)
                 .build();
     }
 
