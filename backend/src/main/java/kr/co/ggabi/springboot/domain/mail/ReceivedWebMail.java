@@ -32,12 +32,17 @@ public class ReceivedWebMail {
     @Column
     private double danger = -1;
 
-    public ReceivedWebMail(Long mailId, String username, int spamFlag, String file, float danger){
+    @Builder.Default
+    @Column
+    private boolean dangerURL = false;
+
+    public ReceivedWebMail(Long mailId, String username, int spamFlag, String file, float danger, boolean dangerURL){
         this.mailId = mailId;
         this.username = username;
         this.spamFlag = spamFlag;
         this.file = file;
         this.danger = danger;
+        this.dangerURL = dangerURL;
     }
 
 
