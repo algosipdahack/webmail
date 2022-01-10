@@ -2,7 +2,6 @@ package kr.co.ggabi.springboot.service;
 
 import kr.co.ggabi.springboot.domain.mail.ReceivedWebMail;
 import kr.co.ggabi.springboot.domain.mail.WebMail;
-import kr.co.ggabi.springboot.domain.users.Member;
 import kr.co.ggabi.springboot.dto.AnalysisRequestDto;
 import kr.co.ggabi.springboot.dto.File;
 import kr.co.ggabi.springboot.repository.ReceivedWebMailRepository;
@@ -11,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.swing.text.html.Option;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,10 +55,10 @@ public class AnalysisService {
                         .build());
             }
 
-            Optional<WebMail> optional = webMailRepository.findByReceiverContainsAndMailId(request.getUsername()+"@ggabi.co.kr", request.getIdx());
+            Optional<List<WebMail>> optional = webMailRepository.findByReceiverContainsAndMailIdAndIsReceivedTrue(request.getUsername()+"@ggabi.co.kr", request.getIdx());
 
-            if (optional.isPresent()) {
-                WebMail webMail = optional.get();
+            if (optional.isPresent() && !optional.get().isEmpty()) {
+                WebMail webMail = optional.get().get(0);
                 if(request.getSpamFlag() > webMail.getSpamFlag()) webMail.setSpamFlag(request.getSpamFlag());
                 if(dangerMax > webMail.getDanger()) webMail.setDanger(dangerMax);
                 webMailRepository.save(webMail);

@@ -19,6 +19,7 @@ import javax.mail.internet.MimeMultipart;
 import javax.mail.internet.MimeUtility;
 import javax.mail.search.FlagTerm;
 import javax.mail.search.MessageNumberTerm;
+import javax.mail.search.SearchTerm;
 import java.io.*;
 import java.net.URLEncoder;
 import java.util.*;
@@ -204,9 +205,12 @@ public class IMAPMailSystem {
         return res;
     }
 
-    public MailResponseDto getEmailDetails(long uid, int idx, String mailBox) throws MessagingException, IOException {
+    public MailResponseDto getEmailDetails(long uid, int idx, String mailBox, boolean seen) throws MessagingException, IOException {
         if(uid == -1) return new MailResponseDto();
         Message m = folder.getMessage(idx);
+        if(!seen){
+            m.setFlags(new Flags(Flags.Flag.SEEN), false);
+        }
         MailResponseDto res = new MailResponseDto();
         res.subject = m.getSubject();
         InternetAddress from = (InternetAddress) m.getFrom()[0];
@@ -257,6 +261,7 @@ public class IMAPMailSystem {
                             res.file.replace(mail.getFile(), attachment);
                         }
                         if (flagMax < mail.getSpamFlag()) flagMax = mail.getSpamFlag();
+                        if (mail.isDangerURL()) res.dangerURL = true;
                     } catch (Exception e) {
                         e.printStackTrace();
                         continue;

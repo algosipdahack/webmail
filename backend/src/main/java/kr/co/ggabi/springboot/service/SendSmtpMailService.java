@@ -57,7 +57,7 @@ public class SendSmtpMailService {
         String password = member.getPassword().substring(6);
 
         // 웹메일 저장
-        saveWebMail(param, username);
+        //saveWebMail(param, username);
 
         try{
             props.put("mail.smtp.port", "25");

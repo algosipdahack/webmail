@@ -59,7 +59,7 @@ public class ImapMailService {
         return res;
     }
 
-    public MailResponseDto showMailDetails(HttpServletRequest httpServletRequest, int idx, String mailBox) throws Exception {
+    public MailResponseDto showMailDetails(HttpServletRequest httpServletRequest, int idx, String mailBox, boolean seen) throws Exception {
         try {
             imapMailSystem.logout(1);
         } catch (IllegalStateException e){
@@ -69,7 +69,7 @@ public class ImapMailService {
         }
         long id = imapMailSystem.login(host, tokenProvider.resolveToken(httpServletRequest), mailBox);
         int msgCount = imapMailSystem.getMessageCount();
-        MailResponseDto res = imapMailSystem.getEmailDetails(id, idx, mailBox);
+        MailResponseDto res = imapMailSystem.getEmailDetails(id, idx, mailBox, seen);
         try {
             imapMailSystem.logout(id);
         } catch (IllegalStateException e){
@@ -139,7 +139,7 @@ public class ImapMailService {
 
             if(mailId < key) {
                 MailResponseDto dto;
-                dto = showMailDetails(httpServletRequest, key, mailBox);
+                dto = showMailDetails(httpServletRequest, key, mailBox, false);
 
                 StringBuilder files = new StringBuilder();
                 for(Map.Entry<String, AttachmentResponseDto> file : dto.file.entrySet()){

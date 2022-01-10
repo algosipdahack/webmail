@@ -18,7 +18,7 @@ public interface WebMailRepository extends JpaRepository<WebMail, Long> {
 
     Optional<WebMail> findFirstByOrderByIdDesc();
     Optional<WebMail> findByReceiverAndMailId(String receiver, int mailId);
-    Optional<WebMail> findByReceiverContainsAndMailId(String receiver, int mailId);
+    Optional<List<WebMail>> findByReceiverContainsAndMailIdAndIsReceivedTrue(String receiver, int mailId);
 
     List<WebMail> findAll();
 

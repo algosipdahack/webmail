@@ -15,5 +15,5 @@ public class MailResponseDto {
     public String content;
     public Map<String, AttachmentResponseDto> file;
     public int flag;
-
+    public boolean dangerURL = false;
 }

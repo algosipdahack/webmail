@@ -35,7 +35,7 @@ public class IMAPMailController {
 
     @GetMapping("/{mailBox}/{idx}")
     public MailResponseDto showMail(HttpServletRequest httpServletRequest, @PathVariable("mailBox") String mailBox, @PathVariable("idx") int idx) throws Exception {
-        return imapMailService.showMailDetails(httpServletRequest, idx, mailBox);
+        return imapMailService.showMailDetails(httpServletRequest, idx, mailBox, true);
     }
 
     @GetMapping("/download/{mailBox}/{idx}/{filename:.+}")
