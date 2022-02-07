@@ -316,6 +316,7 @@ public class IMAPMailSystem {
         int count = mimeMultipart.getCount();
         for (int i = 0; i < count; i++) {
             BodyPart bodyPart = mimeMultipart.getBodyPart(i);
+
             System.out.println(bodyPart.getDataHandler().toString());
             System.out.println(bodyPart.getDisposition());
             if (bodyPart.isMimeType("text/html") &&

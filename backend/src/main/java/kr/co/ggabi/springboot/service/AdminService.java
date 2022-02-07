@@ -1,12 +1,22 @@
 package kr.co.ggabi.springboot.service;
 
+import kr.co.ggabi.springboot.domain.board.Board;
+import kr.co.ggabi.springboot.repository.BoardRepository;
+import kr.co.ggabi.springboot.domain.comments.Comment;
+import kr.co.ggabi.springboot.repository.CommentRepository;
+import kr.co.ggabi.springboot.domain.posts.Post;
+import kr.co.ggabi.springboot.domain.posts.PostList;
+import kr.co.ggabi.springboot.repository.PostListRepository;
+import kr.co.ggabi.springboot.repository.PostRepository;
 import kr.co.ggabi.springboot.domain.users.Authority;
 import kr.co.ggabi.springboot.domain.users.Member;
+import kr.co.ggabi.springboot.dto.BoardUpdateRequestDto;
 import kr.co.ggabi.springboot.dto.MemberResponseDto;
 import kr.co.ggabi.springboot.dto.UserAuthorityDto;
 import kr.co.ggabi.springboot.repository.MembersRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -14,6 +24,10 @@ import java.util.*;
 @RequiredArgsConstructor
 public class AdminService {
     private final MembersRepository membersRepository;
+    private final BoardRepository boardRepository;
+    private final PostListRepository postListRepository;
+    private final PostRepository postRepository;
+    private final CommentRepository commentRepository;
 
     public List<MemberResponseDto> getUser(Authority authority){
         List<Member> memberList = membersRepository.findAllByAuthority(authority);
@@ -47,5 +61,54 @@ public class AdminService {
         }
         return res;
     }
+    @Transactional
+    public Board update(Long id, BoardUpdateRequestDto requestDto) {
+        Board board = boardRepository.findById(id).orElseThrow(()->new IllegalArgumentException("해당 게시판이 없습니다. id="+id));
+        board.update(requestDto.getTitle());
+        return board;
+    }
+    @Transactional
+    public void delete_board(Long bid) {
+        Board board = boardRepository.findById(bid).orElseThrow(()->new IllegalArgumentException("해당 게시판이 없습니다. id="+bid));
+        //게시판 삭제
+        boardRepository.delete(board);
 
+        // 게시물 삭제 & 댓글 삭제
+        //1. POST
+        List<PostList> list = board.getPostlist();
+        List<Post> post = postRepository.findAll();
+        List<Comment> comment = commentRepository.findAll();
+        for (Post iter_p: post){
+            //댓글 삭제
+            for(Comment iter_c:comment) {
+                if (iter_c.getPost_id().equals(iter_p.getId())) {
+                    commentRepository.delete(iter_c);
+                }
+            }
+            for(PostList iter:list){
+                if(iter_p.getList().equals(iter)) {
+                    //게시물 삭제
+                    postRepository.delete(iter_p);
+                }
+            }
+        }
+        //2. POSTList
+        for (PostList iter : list) {
+            postListRepository.delete(iter);
+        }
+    }
+
+    //게시물 삭제
+    @Transactional
+    public void delete_post(Long bid, Long pid) {
+        Post post = postRepository.findById(pid).orElseThrow(()->new IllegalArgumentException("해당 게시물이 없습니다. id="+pid));
+        List<PostList> list = postListRepository.findAll();
+        for (PostList iter : list) {
+            if(iter.equals(post.getList())) {
+                //postlist 삭제
+                postListRepository.delete(iter);
+            }
+        }
+        postRepository.delete(post);
+    }
 }
