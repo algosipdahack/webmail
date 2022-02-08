@@ -28,27 +28,15 @@ public class CommentService {
     }
 
     @Transactional
-    public List<Comment> update(Long bid, Long pid, Long cid, CommentUpdateRequestDto requestDto) {
-        Post post = postRepository.findById(pid).orElseThrow(()->new IllegalArgumentException("해당 게시물이 없습니다. id="+pid));
-        List<Comment> list_c = post.getComment();
-        for (Comment iter : list_c) {
-            if(iter.getId().equals(cid)) {
-                iter.update(requestDto.getContent());
-            }
-        }
-        post.update_comment(list_c); //post 내에서도 update comment가 필요함
-        return list_c;
+    public Long update(Long bid, Long pid, Long cid, CommentUpdateRequestDto requestDto) {
+        Comment comment = commentRepository.findById(cid).orElseThrow(()->new IllegalArgumentException("해당 댓글이 없습니다. id="+cid));
+        comment.update(requestDto.getContent());
+        return comment.getId();
     }
 
-    public CommentResponseDto findById(Long bid, Long pid, Long id) {
-        Post post = postRepository.findById(pid).orElseThrow(()->new IllegalArgumentException("해당 게시판이 없습니다. id="+pid));
-        List<Comment> list_c = post.getComment();
-        for (Comment iter : list_c) {
-            if(iter.getId().equals(id)) {
-                return new CommentResponseDto(iter);
-            }
-        }
-        return null;
+    public CommentResponseDto findById(Long bid, Long pid, Long cid) {
+        Comment comment = commentRepository.findById(cid).orElseThrow(()->new IllegalArgumentException("해당 댓글이 없습니다. id="+cid));
+        return new CommentResponseDto(comment);
     }
 
     @Transactional(readOnly = true) // 조회기능
@@ -60,23 +48,18 @@ public class CommentService {
 
     @Transactional
     public void delete(Long bid, Long pid, Long cid) {
-        Post post = postRepository.findById(pid).orElseThrow(()->new IllegalArgumentException("해당 게시물이 없습니다. id="+pid));
-        List<Comment> list_c = post.getComment();
-        for (Comment iter : list_c) {
-            if(iter.getId().equals(cid)) {
-                //대댓글이 있는 경우
-                if(iter.getParent_id() == null){
-                    for (Comment iter_comment : list_c) {
-                        //대댓글인 경우
-                        if(iter_comment.getParent_id().equals(iter.getId())){
-                            //대댓글 삭제
-                            commentRepository.delete(iter_comment);
-                        }
-                    }
+        Comment comment = commentRepository.findById(cid).orElseThrow(()->new IllegalArgumentException("해당 댓글이 없습니다. id="+cid));
+        List<Comment> list_c = commentRepository.findAllDesc();
+        //댓글인 경우
+        if(comment.getParentId() == null){
+            for (Comment iter_comment : list_c) {
+                //대댓글인 경우
+                if(iter_comment.getParentId().equals(comment.getId())){
+                    //대댓글 삭제
+                    commentRepository.delete(iter_comment);
                 }
-                commentRepository.delete(iter);
-                break;
             }
         }
+        commentRepository.delete(comment);
     }
 }

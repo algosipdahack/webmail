@@ -16,21 +16,20 @@ public class CommentApiController {
 
     //create a comment
     @PostMapping("/{bid}/{pid}")
-    public Comment save(@PathVariable("bid") Long bid, @PathVariable("pid") Long pid, @RequestBody CommentSaveRequestDto requestDto) {
-        requestDto.setPost_id(pid);
-        return commentService.save(requestDto);
+    public Long save(@PathVariable("bid") Long bid, @PathVariable("pid") Long pid, @RequestBody CommentSaveRequestDto requestDto) {
+        requestDto.setPostId(pid);
+        return commentService.save(requestDto).getId();
     }
 
     //modify comment
     @PutMapping("/{bid}/{pid}/{cid}")
-    public List<Comment> update(@PathVariable("bid") Long bid, @PathVariable("pid") Long pid, @PathVariable("cid") Long cid, @RequestBody CommentUpdateRequestDto requestDto) {
+    public Long update(@PathVariable("bid") Long bid, @PathVariable("pid") Long pid, @PathVariable("cid") Long cid, @RequestBody CommentUpdateRequestDto requestDto) {
         return commentService.update(bid,pid,cid,requestDto);
     }
 
     //remove comment
     @DeleteMapping("/{bid}/{pid}/{cid}")
-    public Long delete(@PathVariable("bid") Long bid, @PathVariable("pid") Long pid, @PathVariable("cid") Long cid){
+    public void delete(@PathVariable("bid") Long bid, @PathVariable("pid") Long pid, @PathVariable("cid") Long cid){
         commentService.delete(bid,pid,cid);
-        return cid;
     }
 }

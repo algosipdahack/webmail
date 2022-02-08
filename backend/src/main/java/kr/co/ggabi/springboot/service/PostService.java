@@ -21,7 +21,6 @@ import java.util.stream.Collectors;
 public class PostService {
     private final PostRepository postRepository;
     private final PostListRepository postListRepository;
-    private final BoardRepository boardRepository;
     private final AttachmentRepository attachmentRepository;
     @Transactional
     public Post save(PostSaveRequestDto requestDto) {
@@ -29,10 +28,10 @@ public class PostService {
     }
 
     @Transactional
-    public Post update(Long board_id, Long pid, PostUpdateRequestDto requestDto) {
+    public Long update(Long bid, Long pid, PostUpdateRequestDto requestDto) {
         Post post = postRepository.findById(pid).orElseThrow(()->new IllegalArgumentException("해당 게시물이 없습니다. id="+pid));
-        post.update(requestDto.getList(),requestDto.getContent(),requestDto.getAttachment());
-        return post;
+        post.update(requestDto.getContent(),requestDto.getAttachmentId());
+        return post.getId();
     }
 
     public PostResponseDto findById(Long board_id, Long pid) {
@@ -41,24 +40,25 @@ public class PostService {
     }
 
     @Transactional(readOnly = true) // 조회기능
-    public List<PostListResponseDto> findAllDesc() {
-        return postListRepository.findAllDesc().stream()
-                .map(PostListResponseDto::new)// == .map(posts->new PostsListResponseDto(posts))
+    public List<PostResponseDto> findAllDesc() {
+        return postRepository.findAllDesc().stream()
+                .map(PostResponseDto::new)// == .map(posts->new PostsListResponseDto(posts))
                 .collect(Collectors.toList());
     }
 
     @Transactional
-    public void delete(Long board_id,Long pid) {
-        Post post = postRepository.findById(board_id).orElseThrow(()->new IllegalArgumentException("해당 게시판이 없습니다. id="+pid));
+    public void delete(Long bid,Long pid) {
+        Post post = postRepository.findById(pid).orElseThrow(()->new IllegalArgumentException("해당 게시판이 없습니다. id="+pid));
         postRepository.delete(post);
     }
     @Transactional
     public void delete_file(Long pid) {
         List <Attachment> attachments = attachmentRepository.findAllDesc();
         Post post = postRepository.findById(pid).orElseThrow(()->new IllegalArgumentException("해당 게시물이 없습니다. id="+pid));
+        List <Long> attachmentId = post.getAttachmentId();
         for (Attachment iter : attachments) {
-            for(Attachment post_iter:post.getAttachment()) {
-                if(iter.equals(post_iter)) {
+            for(Long post_iter : attachmentId) {
+                if(iter.getId().equals(post_iter)) {
                     attachmentRepository.delete(iter);
                 }
             }

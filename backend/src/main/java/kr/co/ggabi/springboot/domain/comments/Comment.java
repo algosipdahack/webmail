@@ -14,9 +14,9 @@ public class Comment extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY) //autoincrement
     private Long id;
     @Column
-    private Long post_id;
+    private Long postId;
     @Column
-    private Long parent_id;
+    private Long parentId;
 
     @Column(columnDefinition = "TEXT",nullable = false)
     private String content;
@@ -25,15 +25,15 @@ public class Comment extends BaseTimeEntity {
     private String writer; // username
 
     @Column
-    private Long writer_id;
+    private Long writerId;
 
     @Builder // 빌더 형태로 만들어줌
-    public Comment(Long parent_id, String content, String writer, Long writer_id,Long post_id) {//생성자
-        this.parent_id = parent_id;
+    public Comment(Long parentId, String content, String writer, Long writerId,Long postId) {//생성자
+        this.parentId = parentId;
         this.content = content;
         this.writer = writer;
-        this.writer_id = writer_id;
-        this.post_id = post_id;
+        this.writerId = writerId;
+        this.postId = postId;
     }
 
     public void update(String content) {

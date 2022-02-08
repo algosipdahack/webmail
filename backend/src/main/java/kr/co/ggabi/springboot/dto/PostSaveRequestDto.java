@@ -2,10 +2,12 @@ package kr.co.ggabi.springboot.dto;
 
 import kr.co.ggabi.springboot.domain.attachment.Attachment;
 import kr.co.ggabi.springboot.domain.comments.Comment;
+import kr.co.ggabi.springboot.domain.mail.ReceivedWebMail;
 import kr.co.ggabi.springboot.domain.posts.Post;
 import kr.co.ggabi.springboot.domain.posts.PostList;
 import kr.co.ggabi.springboot.domain.users.Member;
 import kr.co.ggabi.springboot.repository.MembersRepository;
+import kr.co.ggabi.springboot.repository.PostListRepository;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -17,35 +19,27 @@ import java.util.List;
 @Setter
 @RequiredArgsConstructor
 public class PostSaveRequestDto {
-    private PostList list;
+    private Long postlistId;
     private String content;
-    private Long writer_id;
-    private Long board_id;
-    private List<Attachment> attachment;
-    private List<Comment> comment;
-    private MembersRepository membersRepository;
+    private Long writerId;
+    private Long boardId;
+    private List<Long> attachmentId;
+    private List<Long> commentId;
+    private PostListRepository postListRepository;
+
     @Builder
-    public PostSaveRequestDto(String title, String content, boolean is_notice, Long writer_id) {
+    public PostSaveRequestDto(String content, Long writerId) {
         this.content = content;
-        this.writer_id = writer_id;
-        String writer = null;
-        List<Member> members = membersRepository.findAllDesc();
-        for(Member iter: members){
-            if(iter.getId().equals(writer_id)) {
-                writer = iter.getNickname();
-                break;
-            }
-        }
-        this.list.save(title,is_notice,writer);
+        this.writerId = writerId;
     }
     public Post toEntity() {
         return Post.builder()
-                .writer_id(writer_id)
+                .writerId(writerId)
                 .content(content)
-                .list(list)
-                .board_id(board_id)
-                .attachment(attachment)
-                .comment(comment)
+                .postlistId(postlistId)
+                .boardId(boardId)
+                .attachmentId(attachmentId)
+                .commentId(commentId)
                 .build();
     }
 

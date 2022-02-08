@@ -13,7 +13,7 @@ import java.util.List;
 public class BoardSaveRequestDto {
     private String title;
     @Builder
-    public BoardSaveRequestDto(String title,List<Post> post) {
+    public BoardSaveRequestDto(String title) {
         this.title = title;
     }
     public Board toEntity() {

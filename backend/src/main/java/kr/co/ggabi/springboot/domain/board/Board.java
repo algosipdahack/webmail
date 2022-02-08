@@ -20,13 +20,13 @@ public class Board extends BaseTimeEntity {
     private String title;
 
     @Column
-    private List<PostList> postlist;
+    private List<Long> postlistId;
 
 
     @Builder // 빌더 형태로 만들어줌
-    public Board(String title, List<PostList> postlist) {//생성자
+    public Board(String title, List<Long> postlistId) {//생성자
         this.title = title;
-        this.postlist = postlist;
+        this.postlistId = postlistId;
     }
 
     public void update(String title) {

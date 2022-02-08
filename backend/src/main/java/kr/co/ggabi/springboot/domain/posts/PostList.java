@@ -31,16 +31,10 @@ public class PostList {
     @Column(nullable = false)
     private int hits = 0;
 
-    public PostList(String title, String writer,Boolean is_notice, int hits) {//생성자
+    public PostList(String title, String writer,Boolean is_notice) {//생성자
         this.title = title;
         this.writer = writer;
         this.is_notice = is_notice;
-        this.hits = hits;
-    }
-    public void save(String title, boolean is_notice, String writer) {
-        this.title = title;
-        this.is_notice = is_notice;
-        this.writer = writer;
     }
 
     public void update(String title, boolean is_notice) {

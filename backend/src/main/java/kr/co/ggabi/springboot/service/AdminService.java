@@ -75,25 +75,26 @@ public class AdminService {
 
         // 게시물 삭제 & 댓글 삭제
         //1. POST
-        List<PostList> list = board.getPostlist();
+        List<Long> list = board.getPostlistId();
         List<Post> post = postRepository.findAll();
         List<Comment> comment = commentRepository.findAll();
         for (Post iter_p: post){
             //댓글 삭제
             for(Comment iter_c:comment) {
-                if (iter_c.getPost_id().equals(iter_p.getId())) {
+                if (iter_c.getPostId().equals(iter_p.getId())) {
                     commentRepository.delete(iter_c);
                 }
             }
-            for(PostList iter:list){
-                if(iter_p.getList().equals(iter)) {
+            for(Long iter:list){
+                if(iter_p.getPostlistId().equals(iter)) {
                     //게시물 삭제
                     postRepository.delete(iter_p);
                 }
             }
         }
         //2. POSTList
-        for (PostList iter : list) {
+        for (Long id : list) {
+            PostList iter = postListRepository.findById(id).orElseThrow(()->new IllegalArgumentException("해당 게시물이 없습니다. id="+id));
             postListRepository.delete(iter);
         }
     }
@@ -104,7 +105,7 @@ public class AdminService {
         Post post = postRepository.findById(pid).orElseThrow(()->new IllegalArgumentException("해당 게시물이 없습니다. id="+pid));
         List<PostList> list = postListRepository.findAll();
         for (PostList iter : list) {
-            if(iter.equals(post.getList())) {
+            if(iter.getId().equals(post.getPostlistId())) {
                 //postlist 삭제
                 postListRepository.delete(iter);
             }

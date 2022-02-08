@@ -3,6 +3,7 @@ import kr.co.ggabi.springboot.domain.attachment.Attachment;
 import kr.co.ggabi.springboot.domain.posts.Post;
 import kr.co.ggabi.springboot.dto.*;
 import kr.co.ggabi.springboot.service.AttachmentService;
+import kr.co.ggabi.springboot.service.PostListService;
 import kr.co.ggabi.springboot.service.PostService;
 import kr.co.ggabi.springboot.util.MD5Generator;
 import lombok.RequiredArgsConstructor;
@@ -18,19 +19,25 @@ import java.util.List;
 @RequestMapping("/api/board")
 public class PostApiController {
     private final PostService postService;
+    private final PostListService postListService;
     private final AttachmentService attachmentService;
 
     //전체 게시판 목록 출력
     @GetMapping("/post")
     public List<PostListResponseDto> readAll() {
-        return postService.findAllDesc();
+        return postListService.findAllDesc();
     }
 
     //create a post
     @PostMapping("/{bid}")
-    public Post save(@PathVariable("bid") Long bid, @RequestParam("file") List<MultipartFile> files, @RequestBody PostSaveRequestDto requestDto) {
+    public Long save(@PathVariable("bid") Long bid, @RequestParam("file") List<MultipartFile> files, @RequestBody PostSaveRequestDto requestDto,@RequestBody PostListSaveRequestDto requestDto_list) {
         try {
-            List<Attachment> attachments = new ArrayList<>();
+            requestDto.setBoardId(bid);
+
+            Long postlistId = postListService.save(requestDto_list).getId();
+            requestDto.setPostlistId(postlistId);
+
+            List<Long> attachments = new ArrayList<>();
             if(!files.isEmpty()){
                 /* 실행되는 위치의 'files' 폴더에 파일이 저장됩니다. */
                 String savePath = System.getProperty("user.dir") + "\\files";
@@ -54,12 +61,11 @@ public class PostApiController {
                     fileDto.setFilename(filename);
                     fileDto.setFilePath(filePath);
                     fileDto.setSize(file.getSize());
-                    attachments.add(attachmentService.saveFile(fileDto));
+                    attachments.add(attachmentService.saveFile(fileDto).getId());
                 }
             }
-            requestDto.setAttachment(attachments);
-            requestDto.setBoard_id(bid);
-            return postService.save(requestDto);
+            requestDto.setAttachmentId(attachments);
+            return postService.save(requestDto).getId();
         } catch(Exception e) {
             e.printStackTrace();
         }
@@ -68,12 +74,13 @@ public class PostApiController {
 
     //modify post
     @PutMapping("/{bid}/{pid}")
-    public Post update(@PathVariable("bid") Long bid, @PathVariable("pid") Long pid, @RequestParam("file") List<MultipartFile> files, @RequestBody PostUpdateRequestDto requestDto) {
+    public Long update(@PathVariable("bid") Long bid, @PathVariable("pid") Long pid, @RequestParam("file") List<MultipartFile> files, @RequestBody PostUpdateRequestDto requestDto,@RequestBody PostListUpdateRequestDto requestDto_list) {
+        postListService.update(bid,pid,requestDto_list);
         //해당 게시물의 첨부파일 일단 모두 지움
         postService.delete_file(pid);
         //다시 첨부파일 저장
         try {
-            List<Attachment> attachments = new ArrayList<>();
+            List<Long> attachments = new ArrayList<>();
             if(!files.isEmpty()){
                 /* 실행되는 위치의 'files' 폴더에 파일이 저장됩니다. */
                 String savePath = System.getProperty("user.dir") + "\\files";
@@ -98,10 +105,10 @@ public class PostApiController {
                     fileDto.setFilePath(filePath);
                     fileDto.setSize(file.getSize());
 
-                    attachments.add(attachmentService.saveFile(fileDto));
+                    attachments.add(attachmentService.saveFile(fileDto).getId());
                 }
             }
-            requestDto.setAttachment(attachments);
+            requestDto.setAttachmentId(attachments);
             return postService.update(bid, pid, requestDto);
         } catch(Exception e) {
             e.printStackTrace();

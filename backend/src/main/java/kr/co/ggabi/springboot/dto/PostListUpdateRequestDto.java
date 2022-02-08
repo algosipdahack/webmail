@@ -7,15 +7,17 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.*;
+import java.util.List;
+
 @Getter
 @Setter
 @NoArgsConstructor
-public class PostUpdateRequestDto {
-    private List<Long> attachmentId;
-    private String content;
+public class PostListUpdateRequestDto {
+    private String title;
+    private Boolean is_notice;
     @Builder
-    public PostUpdateRequestDto(String content) {
-        this.content = content;
+    public PostListUpdateRequestDto(String title,boolean is_notice) {
+        this.title = title;
+        this.is_notice = is_notice;
     }
 }

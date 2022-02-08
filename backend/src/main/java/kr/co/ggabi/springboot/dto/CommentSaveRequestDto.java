@@ -14,23 +14,23 @@ import java.util.List;
 @Getter
 @RequiredArgsConstructor
 public class CommentSaveRequestDto {
-    private Long parent_id;
+    private Long parentId;
     private String content;
-    private Long writer_id;
+    private Long writerId;
     private String writer;
-    private Long post_id;
+    private Long postId;
     private MembersRepository memberRepository;
 
     @Builder
-    public CommentSaveRequestDto(String content, Long parent_id, Long writer_id) {
+    public CommentSaveRequestDto(String content, Long parentId, Long writerId) {
         this.content = content;
-        this.writer_id = writer_id;
-        this.parent_id = parent_id;
+        this.writerId = writerId;
+        this.parentId = parentId;
 
         String writer = null;
         List<Member> members = memberRepository.findAllDesc();
         for(Member iter: members){
-            if(iter.getId().equals(writer_id)) {
+            if(iter.getId().equals(writerId)) {
                 writer = iter.getNickname();
                 break;
             }
@@ -40,9 +40,9 @@ public class CommentSaveRequestDto {
     public Comment toEntity() {
         return Comment.builder()
                 .content(content)
-                .writer_id(writer_id)
-                .parent_id(parent_id)
-                .post_id(post_id)
+                .writerId(writerId)
+                .parentId(parentId)
+                .postId(postId)
                 .writer(writer)
                 .build();
     }

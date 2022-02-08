@@ -4,27 +4,32 @@ import kr.co.ggabi.springboot.domain.attachment.Attachment;
 import kr.co.ggabi.springboot.domain.comments.Comment;
 import kr.co.ggabi.springboot.domain.posts.Post;
 import kr.co.ggabi.springboot.domain.posts.PostList;
+import lombok.Builder;
 import lombok.Getter;
 
+import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
 public class PostResponseDto {
     private Long id;
-    private Long board_id;
-    private Long writer_id;
+    private Long boardId;
+    private Long writerId;
     private String content;
-    private List<Attachment> attachment;
-    private List<Comment> comment;
-    private PostList list;
+    private List<Long> attachmentId;
+    private List<Long> commentId;
+    private Long postlistId;
 
     public PostResponseDto(Post entity) {
         this.id = entity.getId();
         this.content = entity.getContent();
-        this.board_id = entity.getBoard_id();
-        this.writer_id = entity.getWriter_id();
-        this.attachment = entity.getAttachment();
-        this.comment = entity.getComment();
-        this.list = entity.getList();
+        this.boardId = entity.getBoardId();
+        this.writerId = entity.getWriterId();
+        this.attachmentId = entity.getAttachmentId();
+        this.commentId = entity.getCommentId();
+        this.postlistId = entity.getPostlistId();
     }
 }

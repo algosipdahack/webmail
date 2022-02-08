@@ -19,42 +19,41 @@ public class Post extends BaseTimeEntity {
     private Long id;
 
     @Column(nullable = false)
-    private PostList list;
+    private Long postlistId;
 
     @Column(columnDefinition = "TEXT",nullable = false)
     private String content;
 
     @Column
-    private Long board_id;
+    private Long boardId;
 
     @Column
-    private Long writer_id;
-
-    @Builder.Default
-    @Column
-    private List<Attachment> attachment = new ArrayList<>();
+    private Long writerId;
 
     @Builder.Default
     @Column
-    private List<Comment> comment = new ArrayList<>();
+    private List<Long> attachmentId = new ArrayList<>();
+
+    @Builder.Default
+    @Column
+    private List<Long> commentId = new ArrayList<>();
 
      // 빌더 형태로 만들어줌
-    public Post(PostList list, Long board_id,String content, Long writer_id,List<Attachment> attachment, List<Comment> comment) {//생성자
-        this.board_id = board_id;
-        this.list = list;
+    public Post(Long postlistId, Long boardId,String content, Long writerId,List<Long> attachmentId, List<Long> commentId) {//생성자
+        this.boardId = boardId;
+        this.postlistId = postlistId;
         this.content = content;
-        this.writer_id = writer_id;
-        this.comment = comment;
-        this.attachment = attachment;
+        this.writerId = writerId;
+        this.commentId = commentId;
+        this.attachmentId = attachmentId;
     }
 
-    public void update(PostList list, String content,List<Attachment> attachment) {
-        this.list = list;
+    public void update(String content,List<Long> attachmentId) {
         this.content = content;
-        this.attachment = attachment;
+        this.attachmentId = attachmentId;
     }
-    public void update_comment(List<Comment> comment) {
-        this.comment = comment;
+    public void update_comment(List<Long> commentId) {
+        this.commentId = commentId;
     }
 
 }
