@@ -28,11 +28,9 @@ public class Post extends BaseTimeEntity {
     private Long boardId;
 
 
-    @Builder.Default
     @Column
     private List<Long> attachmentId = new ArrayList<>();
 
-    @Builder.Default
     @Column
     private List<Long> commentId = new ArrayList<>();
 
