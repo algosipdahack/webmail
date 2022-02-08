@@ -27,8 +27,6 @@ public class Post extends BaseTimeEntity {
     @Column
     private Long boardId;
 
-    @Column
-    private Long writerId;
 
     @Builder.Default
     @Column
@@ -39,11 +37,10 @@ public class Post extends BaseTimeEntity {
     private List<Long> commentId = new ArrayList<>();
 
      // 빌더 형태로 만들어줌
-    public Post(Long postlistId, Long boardId,String content, Long writerId,List<Long> attachmentId, List<Long> commentId) {//생성자
+    public Post(Long postlistId, Long boardId,String content, List<Long> attachmentId, List<Long> commentId) {//생성자
         this.boardId = boardId;
         this.postlistId = postlistId;
         this.content = content;
-        this.writerId = writerId;
         this.commentId = commentId;
         this.attachmentId = attachmentId;
     }

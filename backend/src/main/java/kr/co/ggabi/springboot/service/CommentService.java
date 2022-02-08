@@ -24,6 +24,7 @@ public class CommentService {
 
     @Transactional
     public Comment save(CommentSaveRequestDto requestDto) {
+        //TODO writer_name
         return commentRepository.save(requestDto.toEntity());
     }
 

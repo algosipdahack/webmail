@@ -21,20 +21,17 @@ import java.util.List;
 public class PostSaveRequestDto {
     private Long postlistId;
     private String content;
-    private Long writerId;
     private Long boardId;
     private List<Long> attachmentId;
     private List<Long> commentId;
     private PostListRepository postListRepository;
 
     @Builder
-    public PostSaveRequestDto(String content, Long writerId) {
+    public PostSaveRequestDto(String content) {
         this.content = content;
-        this.writerId = writerId;
     }
     public Post toEntity() {
         return Post.builder()
-                .writerId(writerId)
                 .content(content)
                 .postlistId(postlistId)
                 .boardId(boardId)

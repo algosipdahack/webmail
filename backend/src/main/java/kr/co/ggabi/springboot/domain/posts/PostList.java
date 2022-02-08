@@ -23,6 +23,9 @@ public class PostList {
     @Column
     private String writer;
 
+    @Column
+    private Long writerId;
+
     @Builder.Default
     @Column(nullable = false)
     private Boolean is_notice = false;
@@ -31,10 +34,11 @@ public class PostList {
     @Column(nullable = false)
     private int hits = 0;
 
-    public PostList(String title, String writer,Boolean is_notice) {//생성자
+    public PostList(String title, String writer, Long writerId,Boolean is_notice) {//생성자
         this.title = title;
         this.writer = writer;
         this.is_notice = is_notice;
+        this.writerId = writerId;
     }
 
     public void update(String title, boolean is_notice) {

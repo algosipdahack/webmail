@@ -33,7 +33,6 @@ public class PostApiController {
     public Long save(@PathVariable("bid") Long bid, @RequestParam("file") List<MultipartFile> files, @RequestBody PostSaveRequestDto requestDto,@RequestBody PostListSaveRequestDto requestDto_list) {
         try {
             requestDto.setBoardId(bid);
-
             Long postlistId = postListService.save(requestDto_list).getId();
             requestDto.setPostlistId(postlistId);
 

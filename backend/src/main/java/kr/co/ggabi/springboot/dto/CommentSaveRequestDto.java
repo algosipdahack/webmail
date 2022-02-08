@@ -19,7 +19,7 @@ public class CommentSaveRequestDto {
     private Long writerId;
     private String writer;
     private Long postId;
-    private MembersRepository memberRepository;
+    private MembersRepository membersRepository;
 
     @Builder
     public CommentSaveRequestDto(String content, Long parentId, Long writerId) {
@@ -28,7 +28,7 @@ public class CommentSaveRequestDto {
         this.parentId = parentId;
 
         String writer = null;
-        List<Member> members = memberRepository.findAllDesc();
+        List<Member> members = membersRepository.findAllDesc();
         for(Member iter: members){
             if(iter.getId().equals(writerId)) {
                 writer = iter.getNickname();
