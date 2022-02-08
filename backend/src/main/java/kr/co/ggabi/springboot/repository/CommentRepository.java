@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 
 public interface CommentRepository extends JpaRepository<Comment,Long> {
-    @Query("SELECT c FROM Comments c ORDER BY c.id DESC")
+    @Query("SELECT c FROM Comment c ORDER BY c.id DESC")
     List<Comment> findAllDesc();
 
 }
