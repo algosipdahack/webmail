@@ -27,11 +27,10 @@ public class Post extends BaseTimeEntity {
     @Column
     private Long boardId;
 
-
-    @Column
+    @ElementCollection(fetch = FetchType.LAZY)
     private List<Long> attachmentId = new ArrayList<>();
 
-    @Column
+    @ElementCollection(fetch = FetchType.LAZY)
     private List<Long> commentId = new ArrayList<>();
 
      // 빌더 형태로 만들어줌

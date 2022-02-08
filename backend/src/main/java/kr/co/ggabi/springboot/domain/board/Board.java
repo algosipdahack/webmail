@@ -19,7 +19,7 @@ public class Board extends BaseTimeEntity {
     @Column(length = 500, nullable = false)
     private String title;
 
-    @Column
+    @ElementCollection(fetch = FetchType.LAZY)
     private List<Long> postlistId;
 
 
