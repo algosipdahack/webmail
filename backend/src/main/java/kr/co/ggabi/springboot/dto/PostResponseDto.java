@@ -17,7 +17,6 @@ import java.util.List;
 public class PostResponseDto {
     private Long id;
     private Long boardId;
-    private Long writerId;
     private String content;
     private List<Long> attachmentId;
     private List<Long> commentId;
@@ -27,7 +26,6 @@ public class PostResponseDto {
         this.id = entity.getId();
         this.content = entity.getContent();
         this.boardId = entity.getBoardId();
-        this.writerId = entity.getWriterId();
         this.attachmentId = entity.getAttachmentId();
         this.commentId = entity.getCommentId();
         this.postlistId = entity.getPostlistId();

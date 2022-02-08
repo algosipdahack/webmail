@@ -6,14 +6,16 @@ import lombok.Getter;
 @Getter
 public class CommentResponseDto {
     private Long id;
-    private Long parent_id;
+    private Long parentId;
     private String content;
     private String writer;
+    private Long writerId;
 
     public CommentResponseDto(Comment entity) {
         this.id = entity.getId();
-        this.parent_id = entity.getParent_id();
+        this.parentId = entity.getParentId();
         this.content = entity.getContent();
         this.writer = entity.getWriter();
+        this.writerId = entity.getWriterId();
     }
 }

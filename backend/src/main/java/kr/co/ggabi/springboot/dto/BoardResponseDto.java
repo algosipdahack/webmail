@@ -10,11 +10,11 @@ import java.util.List;
 public class BoardResponseDto {
     private Long id;
     private String title;
-    private List<PostList> post;
+    private List<Long> postlistId;
 
     public BoardResponseDto(Board entity) {
         this.id = entity.getId();
         this.title = entity.getTitle();
-        this.post = entity.getPostlist();
+        this.postlistId = entity.getPostlistId();
     }
 }

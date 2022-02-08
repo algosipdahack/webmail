@@ -15,8 +15,8 @@ public class AdminApiController {
 
     //modify board
     @PutMapping("/{bid}")
-    public Board update(@PathVariable("bid") Long bid, @RequestBody BoardUpdateRequestDto requestDto) {
-        return adminService.update(bid,requestDto);
+    public Long update(@PathVariable("bid") Long bid, @RequestBody BoardUpdateRequestDto requestDto) {
+        return adminService.update(bid,requestDto).getId();
     }
 
     //remove board

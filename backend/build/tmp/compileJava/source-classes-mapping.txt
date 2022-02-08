@@ -137,17 +137,22 @@ kr/co/ggabi/springboot/service/ImapMailService.java
  kr.co.ggabi.springboot.service.ImapMailService
 kr/co/ggabi/springboot/dto/SetMailDto.java
  kr.co.ggabi.springboot.dto.SetMailDto
+kr/co/ggabi/springboot/service/PostListService.java
+ kr.co.ggabi.springboot.service.PostListService
 kr/co/ggabi/springboot/dto/MailboxResponseDto.java
  kr.co.ggabi.springboot.dto.MailboxResponseDto
+kr/co/ggabi/springboot/dto/PostListUpdateRequestDto.java
+ kr.co.ggabi.springboot.dto.PostListUpdateRequestDto
+ kr.co.ggabi.springboot.dto.PostListUpdateRequestDto$PostListUpdateRequestDtoBuilder
 kr/co/ggabi/springboot/domain/users/Member.java
  kr.co.ggabi.springboot.domain.users.Member
  kr.co.ggabi.springboot.domain.users.Member$MemberBuilder
-kr/co/ggabi/springboot/domain/attachment/Attachment.java
- kr.co.ggabi.springboot.domain.attachment.Attachment
- kr.co.ggabi.springboot.domain.attachment.Attachment$AttachmentBuilder
 kr/co/ggabi/springboot/dto/MembersSaveRequestDto.java
  kr.co.ggabi.springboot.dto.MembersSaveRequestDto
  kr.co.ggabi.springboot.dto.MembersSaveRequestDto$MembersSaveRequestDtoBuilder
+kr/co/ggabi/springboot/domain/attachment/Attachment.java
+ kr.co.ggabi.springboot.domain.attachment.Attachment
+ kr.co.ggabi.springboot.domain.attachment.Attachment$AttachmentBuilder
 kr/co/ggabi/springboot/repository/WebMailRepository.java
  kr.co.ggabi.springboot.repository.WebMailRepository
 kr/co/ggabi/springboot/config/SecurityConfig.java
@@ -175,6 +180,9 @@ kr/co/ggabi/springboot/controller/PostApiController.java
  kr.co.ggabi.springboot.controller.PostApiController
 kr/co/ggabi/springboot/controller/AnalysisController.java
  kr.co.ggabi.springboot.controller.AnalysisController
+kr/co/ggabi/springboot/dto/PostListSaveRequestDto.java
+ kr.co.ggabi.springboot.dto.PostListSaveRequestDto
+ kr.co.ggabi.springboot.dto.PostListSaveRequestDto$PostListSaveRequestDtoBuilder
 kr/co/ggabi/springboot/service/CreateMemberService.java
  kr.co.ggabi.springboot.service.CreateMemberService
 kr/co/ggabi/springboot/controller/BoardApiController.java
