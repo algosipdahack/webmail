@@ -13,6 +13,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Getter
@@ -24,11 +25,11 @@ public class PostResponseDto {
     private List<Attachment> attachment;
     private List<Comment> comment;
     private PostList postlist;
-    private LocalDateTime createdDate;
+    public Date isCreated;
     public PostResponseDto(Post entity) {
         this.id = entity.getId();
         this.content = entity.getContent();
         this.boardId = entity.getBoardId();
-        this.createdDate = entity.getCreatedDate();
+        this.isCreated = entity.getIsCreated();
     }
 }

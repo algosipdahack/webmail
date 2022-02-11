@@ -3,13 +3,15 @@ import kr.co.ggabi.springboot.domain.BaseTimeEntity;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
+import java.util.Date;
 
 @Getter
 @NoArgsConstructor
 @Entity
-public class Comment extends BaseTimeEntity {
+public class Comment {
     @Id //pk
     @GeneratedValue(strategy = GenerationType.IDENTITY) //autoincrement
     private Long id;
@@ -26,6 +28,9 @@ public class Comment extends BaseTimeEntity {
 
     @Column
     private Long writerId;
+
+    @CreationTimestamp
+    private Date isCreated;
 
     @Builder // 빌더 형태로 만들어줌
     public Comment(Long parentId, String content, String writer, Long writerId,Long postId) {//생성자

@@ -23,15 +23,16 @@ public class PostListSaveRequestDto {
     private int hits;
 
     @Builder
-    public PostListSaveRequestDto(Long writerId, String title, boolean is_notice) {
+    public PostListSaveRequestDto(String writer, String title, boolean is_notice) {
         this.title = title;
         this.is_notice = is_notice;
-        this.writerId = writerId;
+        this.writer = writer;
     }
     public PostList toEntity() {
         return PostList.builder()
                 .title(title)
                 .writer(writer)
+                .writerId(writerId)
                 .is_notice(is_notice)
                 .hits(hits)
                 .build();

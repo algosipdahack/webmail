@@ -21,9 +21,9 @@ public class CommentSaveRequestDto {
     private Long postId;
 
     @Builder
-    public CommentSaveRequestDto(String content, Long parentId, Long writerId) {
+    public CommentSaveRequestDto(String content, Long parentId, String writer) {
         this.content = content;
-        this.writerId = writerId;
+        this.writer = writer;
         this.parentId = parentId;
     }
     public Comment toEntity() {

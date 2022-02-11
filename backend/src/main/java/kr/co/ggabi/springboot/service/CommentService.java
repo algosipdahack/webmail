@@ -27,15 +27,15 @@ public class CommentService {
 
     @Transactional
     public Comment save(CommentSaveRequestDto requestDto) {
-        String writer = null;
+        Long writerId = null;
         List<Member> members = membersRepository.findAllDesc();
         for(Member iter: members){
             if(iter.getId().equals(requestDto.getWriterId())) {
-                writer = iter.getNickname();
+                writerId = iter.getId();
                 break;
             }
         }
-        requestDto.setWriter(writer);
+        requestDto.setWriterId(writerId);
         return commentRepository.save(requestDto.toEntity());
     }
 

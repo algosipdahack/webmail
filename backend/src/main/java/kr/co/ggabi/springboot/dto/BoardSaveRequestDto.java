@@ -5,15 +5,19 @@ import kr.co.ggabi.springboot.domain.posts.Post;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Getter
+@Setter
 @RequiredArgsConstructor
 public class BoardSaveRequestDto {
     private String title;
     private List<Long> list = new ArrayList<>();
+    private LocalDateTime createdDate;
     @Builder
     public BoardSaveRequestDto(String title) {
         this.title = title;

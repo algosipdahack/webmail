@@ -60,7 +60,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/board/**").permitAll()
                 .antMatchers("/api/board").permitAll()
                 .antMatchers("/api/danger").access("hasIpAddress('192.168.4.211')")
-                .antMatchers("/api/admin", "/api/admin/**").hasRole("ADMIN")
+                .antMatchers("/api/admin", "/api/admin/**").permitAll()
                 .antMatchers("/api/user","/api/user/**").permitAll()
                 .antMatchers("/api/**").hasAnyRole("ADMIN", "USER")
                 .anyRequest().authenticated()

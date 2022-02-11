@@ -7,12 +7,13 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Getter
 @NoArgsConstructor
 @Entity
-public class Board extends BaseTimeEntity {
+public class Board {
     @Id //pk
     @GeneratedValue(strategy = GenerationType.IDENTITY) //autoincrement
     private Long id;
@@ -21,13 +22,16 @@ public class Board extends BaseTimeEntity {
     private String title;
 
     @ElementCollection(fetch = FetchType.LAZY)
-    private List<Long> postlistId = new ArrayList<>();
-
+    private List<Long> postlistId;
 
     @Builder // 빌더 형태로 만들어줌
     public Board(String title, List<Long> postlistId) {//생성자
         this.title = title;
-        this.postlistId = postlistId;
+        if(postlistId == null) {
+            this.postlistId = new ArrayList<>();
+        } else {
+            this.postlistId = postlistId;
+        }
     }
 
     public void update(String title) {

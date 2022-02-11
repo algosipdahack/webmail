@@ -3,9 +3,11 @@ import kr.co.ggabi.springboot.domain.BaseTimeEntity;
 import kr.co.ggabi.springboot.domain.attachment.Attachment;
 import kr.co.ggabi.springboot.domain.comments.Comment;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Getter
@@ -13,7 +15,7 @@ import java.util.List;
 @AllArgsConstructor // 모든 필드 값을 파라미터로 받는 생성자 생성
 @Builder
 @Entity
-public class Post extends BaseTimeEntity {
+public class Post {
     @Id //pk
     @GeneratedValue(strategy = GenerationType.IDENTITY) //autoincrement
     private Long id;
@@ -32,6 +34,9 @@ public class Post extends BaseTimeEntity {
 
     @ElementCollection(fetch = FetchType.LAZY)
     private List<Long> commentId = new ArrayList<>();
+
+    @CreationTimestamp
+    private Date isCreated;
 
      // 빌더 형태로 만들어줌
     public Post(Long postlistId, Long boardId,String content, List<Long> attachmentId, List<Long> commentId) {//생성자

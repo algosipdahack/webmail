@@ -31,9 +31,16 @@ public class PostApiController {
 
     //create a post
     @PostMapping("/{bid}")
-    public Long save(@PathVariable("bid") Long bid, @RequestParam("file") List<MultipartFile> files, @RequestBody PostSaveRequestDto requestDto,@RequestBody PostListSaveRequestDto requestDto_list) {
+    public Long save(@PathVariable("bid") Long bid, @RequestParam("content") String content,@RequestParam("writer") String writer, @RequestParam("title") String title, @RequestParam("is_notice") boolean is_notice, @RequestParam("file") List<MultipartFile> files) {
         try {
+            PostSaveRequestDto requestDto = new PostSaveRequestDto();
+            requestDto.setContent(content);
             requestDto.setBoardId(bid);
+            PostListSaveRequestDto requestDto_list = new PostListSaveRequestDto();
+            requestDto_list.setWriter(writer);
+            requestDto_list.setTitle(title);
+            requestDto_list.setIs_notice(is_notice);
+
             Long postlistId = postListService.save(requestDto_list).getId();
             requestDto.setPostlistId(postlistId);
 
@@ -74,7 +81,14 @@ public class PostApiController {
 
     //modify post
     @PutMapping("/{bid}/{pid}")
-    public Long update(@PathVariable("bid") Long bid, @PathVariable("pid") Long pid, @RequestParam("file") List<MultipartFile> files, @RequestBody PostUpdateRequestDto requestDto,@RequestBody PostListUpdateRequestDto requestDto_list) {
+    public Long update(@PathVariable("bid") Long bid, @PathVariable("pid") Long pid, @RequestParam("file") List<MultipartFile> files,@RequestParam("content") String content, @RequestParam("title") String title, @RequestParam("is_notice") boolean is_notice) {
+        PostUpdateRequestDto requestDto = new PostUpdateRequestDto();
+        requestDto.setContent(content);
+
+        PostListUpdateRequestDto requestDto_list = new PostListUpdateRequestDto();
+        requestDto_list.setTitle(title);
+        requestDto_list.setIs_notice(is_notice);
+
         postListService.update(bid,pid,requestDto_list);
         //해당 게시물의 첨부파일 일단 모두 지움
         postService.delete_file(pid);

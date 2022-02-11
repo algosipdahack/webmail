@@ -20,7 +20,7 @@ public class AdminApiController {
         return adminService.update(bid,requestDto).getId();
     }
     //create a board
-    @PostMapping
+    @PostMapping("/board")
     public Long save(@RequestBody BoardSaveRequestDto requestDto) {
         return adminService.save(requestDto);
     }
