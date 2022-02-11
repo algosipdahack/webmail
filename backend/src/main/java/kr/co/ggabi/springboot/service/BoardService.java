@@ -19,10 +19,6 @@ import java.util.stream.Collectors;
 public class BoardService {
     private final BoardRepository boardRepository;
     private final PostListRepository postListRepository;
-    @Transactional
-    public Long save(BoardSaveRequestDto requestDto) {
-        return boardRepository.save(requestDto.toEntity()).getId();
-    }
 
 
     public BoardResponseDto findById(Long id) {

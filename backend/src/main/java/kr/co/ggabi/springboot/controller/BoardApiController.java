@@ -14,12 +14,6 @@ import java.util.List;
 public class BoardApiController {
     private final BoardService boardService;
 
-    //create a board
-    @PostMapping
-    public Long save(@RequestBody BoardSaveRequestDto requestDto) {
-        return boardService.save(requestDto);
-    }
-
     //return all board information
     @GetMapping
     public List<BoardListResponseDto> findAll (){

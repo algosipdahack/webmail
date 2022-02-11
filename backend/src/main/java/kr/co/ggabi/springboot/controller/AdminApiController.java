@@ -1,5 +1,6 @@
 package kr.co.ggabi.springboot.controller;
 import kr.co.ggabi.springboot.domain.board.Board;
+import kr.co.ggabi.springboot.dto.BoardSaveRequestDto;
 import kr.co.ggabi.springboot.dto.BoardUpdateRequestDto;
 import kr.co.ggabi.springboot.service.AdminService;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +19,12 @@ public class AdminApiController {
     public Long update(@PathVariable("bid") Long bid, @RequestBody BoardUpdateRequestDto requestDto) {
         return adminService.update(bid,requestDto).getId();
     }
-
+    //create a board
+    @PostMapping
+    public Long save(@RequestBody BoardSaveRequestDto requestDto) {
+        return adminService.save(requestDto);
+    }
+    
     //remove board
     @DeleteMapping("/{bid}")
     public void delete_board(@PathVariable("bid") Long bid){

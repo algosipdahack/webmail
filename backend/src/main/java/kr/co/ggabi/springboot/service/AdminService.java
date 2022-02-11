@@ -1,6 +1,7 @@
 package kr.co.ggabi.springboot.service;
 
 import kr.co.ggabi.springboot.domain.board.Board;
+import kr.co.ggabi.springboot.dto.BoardSaveRequestDto;
 import kr.co.ggabi.springboot.repository.BoardRepository;
 import kr.co.ggabi.springboot.domain.comments.Comment;
 import kr.co.ggabi.springboot.repository.CommentRepository;
@@ -61,6 +62,12 @@ public class AdminService {
         }
         return res;
     }
+
+    @Transactional
+    public Long save(BoardSaveRequestDto requestDto) {
+        return boardRepository.save(requestDto.toEntity()).getId();
+    }
+
     @Transactional
     public Board update(Long id, BoardUpdateRequestDto requestDto) {
         Board board = boardRepository.findById(id).orElseThrow(()->new IllegalArgumentException("해당 게시판이 없습니다. id="+id));
