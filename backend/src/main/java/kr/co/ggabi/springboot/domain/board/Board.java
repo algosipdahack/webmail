@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -20,7 +21,7 @@ public class Board extends BaseTimeEntity {
     private String title;
 
     @ElementCollection(fetch = FetchType.LAZY)
-    private List<Long> postlistId;
+    private List<Long> postlistId = new ArrayList<>();
 
 
     @Builder // 빌더 형태로 만들어줌

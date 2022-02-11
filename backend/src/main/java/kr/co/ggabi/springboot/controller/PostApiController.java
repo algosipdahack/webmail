@@ -25,6 +25,7 @@ public class PostApiController {
     //전체 게시판 목록 출력
     @GetMapping("/post")
     public List<PostListResponseDto> readAll() {
+
         return postListService.findAllDesc();
     }
 

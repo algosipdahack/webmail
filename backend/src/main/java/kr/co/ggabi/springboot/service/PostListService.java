@@ -1,5 +1,6 @@
 package kr.co.ggabi.springboot.service;
 
+import kr.co.ggabi.springboot.domain.board.Board;
 import kr.co.ggabi.springboot.domain.posts.Post;
 import kr.co.ggabi.springboot.domain.posts.PostList;
 import kr.co.ggabi.springboot.domain.users.Member;
@@ -49,9 +50,19 @@ public class PostListService {
 
     @Transactional(readOnly = true) // 조회기능
     public List<PostListResponseDto> findAllDesc() {
-        return postListRepository.findAllDesc().stream()
+        List<PostListResponseDto> tmp =  postListRepository.findAllDesc().stream()
                 .map(PostListResponseDto::new)// == .map(posts->new PostsListResponseDto(posts))
                 .collect(Collectors.toList());
+        List<Post> post = postRepository.findAllDesc();
+        for(Post iter:post){
+            Board board = boardRepository.findById(iter.getBoardId()).orElseThrow(()->new IllegalArgumentException("해당 게시판이 없습니다. id="+iter.getBoardId()));
+            for(PostListResponseDto iter_list:tmp){
+                if(iter_list.getId().equals(iter.getId())){
+                    iter_list.setBoard(board);
+                }
+            }
+        }
+        return tmp;
     }
 
     @Transactional

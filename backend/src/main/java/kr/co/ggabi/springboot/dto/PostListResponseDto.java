@@ -1,10 +1,13 @@
 package kr.co.ggabi.springboot.dto;
 
+import kr.co.ggabi.springboot.domain.board.Board;
 import kr.co.ggabi.springboot.domain.posts.PostList;
 import lombok.Getter;
+import lombok.Setter;
 
 //목록 출력
 @Getter
+@Setter
 public class PostListResponseDto {
     private Long id;
     private String title;
@@ -12,6 +15,7 @@ public class PostListResponseDto {
     private Long writerId;
     private int hits;
     private Boolean is_notice;
+    private Board board;
 
     public PostListResponseDto(PostList entity) {
         this.id = entity.getId();
