@@ -13,7 +13,6 @@ import java.util.List;
 @RequestMapping("/api/board")
 public class CommentApiController {
     private final CommentService commentService;
-
     //create a comment
     @PostMapping("/{bid}/{pid}")
     public Long save(@PathVariable("bid") Long bid, @PathVariable("pid") Long pid, @RequestBody CommentSaveRequestDto requestDto) {

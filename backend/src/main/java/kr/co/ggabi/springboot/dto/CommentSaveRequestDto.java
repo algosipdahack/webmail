@@ -19,23 +19,12 @@ public class CommentSaveRequestDto {
     private Long writerId;
     private String writer;
     private Long postId;
-    private MembersRepository membersRepository;
 
     @Builder
     public CommentSaveRequestDto(String content, Long parentId, Long writerId) {
         this.content = content;
         this.writerId = writerId;
         this.parentId = parentId;
-
-        String writer = null;
-        List<Member> members = membersRepository.findAllDesc();
-        for(Member iter: members){
-            if(iter.getId().equals(writerId)) {
-                writer = iter.getNickname();
-                break;
-            }
-        }
-        this.writer = writer;
     }
     public Comment toEntity() {
         return Comment.builder()

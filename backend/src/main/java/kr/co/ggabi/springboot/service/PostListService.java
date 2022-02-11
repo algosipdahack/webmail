@@ -2,11 +2,9 @@ package kr.co.ggabi.springboot.service;
 
 import kr.co.ggabi.springboot.domain.posts.Post;
 import kr.co.ggabi.springboot.domain.posts.PostList;
+import kr.co.ggabi.springboot.domain.users.Member;
 import kr.co.ggabi.springboot.dto.*;
-import kr.co.ggabi.springboot.repository.AttachmentRepository;
-import kr.co.ggabi.springboot.repository.BoardRepository;
-import kr.co.ggabi.springboot.repository.PostListRepository;
-import kr.co.ggabi.springboot.repository.PostRepository;
+import kr.co.ggabi.springboot.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,8 +19,19 @@ public class PostListService {
     private final PostListRepository postListRepository;
     private final BoardRepository boardRepository;
     private final AttachmentRepository attachmentRepository;
+    private final MembersRepository membersRepository;
+
     @Transactional
     public PostList save(PostListSaveRequestDto requestDto) {
+        String writer = null;
+        List<Member> members = membersRepository.findAllDesc();
+        for(Member iter: members){
+            if(iter.getId().equals(requestDto.getWriterId())) {
+                writer = iter.getNickname();
+                break;
+            }
+        }
+        requestDto.setWriter(writer);
         return postListRepository.save(requestDto.toEntity());
     }
 

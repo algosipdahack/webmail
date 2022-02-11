@@ -18,24 +18,15 @@ import java.util.List;
 public class PostListSaveRequestDto {
     private String title;
     private String writer;
-    private int writerId;
+    private Long writerId;
     private Boolean is_notice;
     private int hits;
-    private MembersRepository membersRepository;
 
     @Builder
     public PostListSaveRequestDto(Long writerId, String title, boolean is_notice) {
         this.title = title;
         this.is_notice = is_notice;
-        String writer = null;
-        List<Member> members = membersRepository.findAllDesc();
-        for(Member iter: members){
-            if(iter.getId().equals(writerId)) {
-                writer = iter.getNickname();
-                break;
-            }
-        }
-        this.writer = writer;
+        this.writerId = writerId;
     }
     public PostList toEntity() {
         return PostList.builder()
