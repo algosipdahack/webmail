@@ -26,7 +26,7 @@ public class PostListService {
     public PostList save(PostListSaveRequestDto requestDto) {
         Long writerId = null;
         List<Member> members = membersRepository.findAllDesc();
-        for(Member iter: members){
+        for(Member iter: members) {
             if(iter.getId().equals(requestDto.getWriterId())) {
                 writerId = iter.getId();
                 break;
@@ -53,6 +53,7 @@ public class PostListService {
         List<PostListResponseDto> tmp =  postListRepository.findAllDesc().stream()
                 .map(PostListResponseDto::new)// == .map(posts->new PostsListResponseDto(posts))
                 .collect(Collectors.toList());
+
         List<Post> post = postRepository.findAllDesc();
         for(Post iter:post){
             Board board = boardRepository.findById(iter.getBoardId()).orElseThrow(()->new IllegalArgumentException("해당 게시판이 없습니다. id="+iter.getBoardId()));

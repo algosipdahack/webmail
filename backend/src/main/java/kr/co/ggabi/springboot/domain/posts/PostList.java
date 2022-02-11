@@ -4,8 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
+import java.util.Date;
+
 @Getter
 @NoArgsConstructor // 파라미터 없는 기본생성자 생성
 @AllArgsConstructor // 모든 필드 값을 파라미터로 받는 생성자 생성
@@ -33,6 +36,9 @@ public class PostList {
     @Builder.Default
     @Column(nullable = false)
     private int hits = 0;
+
+    @CreationTimestamp
+    private Date isCreated;
 
     public PostList(String title, String writer, Long writerId,Boolean is_notice) {//생성자
         this.title = title;

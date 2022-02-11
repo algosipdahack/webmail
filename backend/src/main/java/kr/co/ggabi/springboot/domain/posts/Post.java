@@ -35,9 +35,6 @@ public class Post {
     @ElementCollection(fetch = FetchType.LAZY)
     private List<Long> commentId = new ArrayList<>();
 
-    @CreationTimestamp
-    private Date isCreated;
-
      // 빌더 형태로 만들어줌
     public Post(Long postlistId, Long boardId,String content, List<Long> attachmentId, List<Long> commentId) {//생성자
         this.boardId = boardId;

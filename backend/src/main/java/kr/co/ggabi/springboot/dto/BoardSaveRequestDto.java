@@ -17,7 +17,6 @@ import java.util.List;
 public class BoardSaveRequestDto {
     private String title;
     private List<Long> list = new ArrayList<>();
-    private LocalDateTime createdDate;
     @Builder
     public BoardSaveRequestDto(String title) {
         this.title = title;

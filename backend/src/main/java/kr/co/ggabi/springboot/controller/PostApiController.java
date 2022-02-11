@@ -33,9 +33,11 @@ public class PostApiController {
     @PostMapping("/{bid}")
     public Long save(@PathVariable("bid") Long bid, @RequestParam("content") String content,@RequestParam("writer") String writer, @RequestParam("title") String title, @RequestParam("is_notice") boolean is_notice, @RequestParam("file") List<MultipartFile> files) {
         try {
+            //board
             PostSaveRequestDto requestDto = new PostSaveRequestDto();
             requestDto.setContent(content);
             requestDto.setBoardId(bid);
+
             PostListSaveRequestDto requestDto_list = new PostListSaveRequestDto();
             requestDto_list.setWriter(writer);
             requestDto_list.setTitle(title);

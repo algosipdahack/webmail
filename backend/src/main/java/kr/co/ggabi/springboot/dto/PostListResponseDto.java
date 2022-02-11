@@ -5,6 +5,8 @@ import kr.co.ggabi.springboot.domain.posts.PostList;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Date;
+
 //목록 출력
 @Getter
 @Setter
@@ -16,6 +18,7 @@ public class PostListResponseDto {
     private int hits;
     private Boolean is_notice;
     private Board board;
+    public Date isCreated;
 
     public PostListResponseDto(PostList entity) {
         this.id = entity.getId();
@@ -24,5 +27,6 @@ public class PostListResponseDto {
         this.hits = entity.getHits();
         this.writerId = entity.getWriterId();
         this.is_notice = entity.getIs_notice();
+        this.isCreated = entity.getIsCreated();
     }
 }

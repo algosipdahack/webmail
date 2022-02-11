@@ -33,15 +33,15 @@ public class AdminApiController {
 
     //remove post -> 해당 게시물 내에서 삭제
     @DeleteMapping("/{bid}/{pid}")
-    public void delete_post(@PathVariable("bid") Long bid,@PathVariable("pid") Long pid){
+    public void delete_post(@PathVariable("bid") Long bid,@PathVariable("pid") Long pid) {
         adminService.delete_post(bid,pid);
     }
 
     //게시물 선택삭제
-    @RequestMapping(value="/{bid}/post",method = RequestMethod.POST)
-    public void ajaxTest(@PathVariable("bid") Long bid, @RequestBody List<Long> request) {
+    @RequestMapping(value="/post",method = RequestMethod.POST)
+    public void ajaxTest(@RequestBody List<Long> request) {
         for(Long id : request){
-            adminService.delete_post(bid, id);
+            adminService.delete_post(null, id);
         }
     }
 

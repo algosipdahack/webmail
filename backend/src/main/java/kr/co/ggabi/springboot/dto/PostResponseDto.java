@@ -25,11 +25,10 @@ public class PostResponseDto {
     private List<Attachment> attachment;
     private List<Comment> comment;
     private PostList postlist;
-    public Date isCreated;
+
     public PostResponseDto(Post entity) {
         this.id = entity.getId();
         this.content = entity.getContent();
         this.boardId = entity.getBoardId();
-        this.isCreated = entity.getIsCreated();
     }
 }
