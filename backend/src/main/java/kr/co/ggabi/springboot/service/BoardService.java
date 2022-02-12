@@ -2,6 +2,7 @@ package kr.co.ggabi.springboot.service;
 import kr.co.ggabi.springboot.domain.board.Board;
 import kr.co.ggabi.springboot.domain.posts.PostList;
 import kr.co.ggabi.springboot.dto.BoardListResponseDto;
+import kr.co.ggabi.springboot.dto.BoardPostSaveRequestDto;
 import kr.co.ggabi.springboot.dto.BoardResponseDto;
 import kr.co.ggabi.springboot.dto.BoardSaveRequestDto;
 import kr.co.ggabi.springboot.repository.BoardRepository;
@@ -39,5 +40,8 @@ public class BoardService {
                 .map(BoardListResponseDto::new)// == .map(Board->new BoardListResponseDto(board))
                 .collect(Collectors.toList());
     }
-
+    @Transactional
+    public Long save_postlist(BoardPostSaveRequestDto requestDto) {
+        return boardRepository.save(requestDto.toEntity()).getId();
+    }
 }

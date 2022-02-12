@@ -3,6 +3,7 @@ import kr.co.ggabi.springboot.domain.attachment.Attachment;
 import kr.co.ggabi.springboot.domain.posts.Post;
 import kr.co.ggabi.springboot.dto.*;
 import kr.co.ggabi.springboot.service.AttachmentService;
+import kr.co.ggabi.springboot.service.BoardService;
 import kr.co.ggabi.springboot.service.PostListService;
 import kr.co.ggabi.springboot.service.PostService;
 import kr.co.ggabi.springboot.util.MD5Generator;
@@ -21,6 +22,7 @@ public class PostApiController {
     private final PostService postService;
     private final PostListService postListService;
     private final AttachmentService attachmentService;
+    private final BoardService boardService;
 
     //전체 게시판 목록 출력
     @GetMapping("/post")
@@ -33,7 +35,6 @@ public class PostApiController {
     @PostMapping("/{bid}")
     public Long save(@PathVariable("bid") Long bid, @RequestParam("content") String content,@RequestParam("writer") String writer, @RequestParam("title") String title, @RequestParam("is_notice") boolean is_notice, @RequestParam("file") List<MultipartFile> files) {
         try {
-            //board
             PostSaveRequestDto requestDto = new PostSaveRequestDto();
             requestDto.setContent(content);
             requestDto.setBoardId(bid);
@@ -45,6 +46,10 @@ public class PostApiController {
 
             Long postlistId = postListService.save(requestDto_list).getId();
             requestDto.setPostlistId(postlistId);
+
+
+            BoardPostSaveRequestDto requestDto_board = new BoardPostSaveRequestDto(postlistId);
+            boardService.save_postlist(requestDto_board);
 
             List<Long> attachments = new ArrayList<>();
             if(!files.isEmpty()){

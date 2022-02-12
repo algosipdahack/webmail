@@ -20,7 +20,6 @@ public class PostListSaveRequestDto {
     private String writer;
     private Long writerId;
     private Boolean is_notice;
-    private int hits;
 
     @Builder
     public PostListSaveRequestDto(String writer, String title, boolean is_notice) {
@@ -34,7 +33,6 @@ public class PostListSaveRequestDto {
                 .writer(writer)
                 .writerId(writerId)
                 .is_notice(is_notice)
-                .hits(hits)
                 .build();
     }
 }

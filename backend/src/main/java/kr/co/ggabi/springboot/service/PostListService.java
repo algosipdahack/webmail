@@ -27,7 +27,7 @@ public class PostListService {
         Long writerId = null;
         List<Member> members = membersRepository.findAllDesc();
         for(Member iter: members) {
-            if(iter.getId().equals(requestDto.getWriterId())) {
+            if(iter.getUsername().equals(requestDto.getWriter())) {
                 writerId = iter.getId();
                 break;
             }

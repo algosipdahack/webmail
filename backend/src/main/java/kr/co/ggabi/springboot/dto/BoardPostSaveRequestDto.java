@@ -1,26 +1,18 @@
 package kr.co.ggabi.springboot.dto;
 
 import kr.co.ggabi.springboot.domain.board.Board;
-import kr.co.ggabi.springboot.domain.posts.Post;
 import lombok.Builder;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@Getter
-@Setter
-@RequiredArgsConstructor
-public class BoardSaveRequestDto {
+public class BoardPostSaveRequestDto {
     private String title;
-    private List<Long> list = new ArrayList<>();
+    private List<Long> list;
 
     @Builder
-    public BoardSaveRequestDto(String title) {
-        this.title = title;
+    public BoardPostSaveRequestDto(Long id) {
+        this.list.add(id);
     }
     public Board toEntity() {
         return Board.builder()

@@ -23,8 +23,6 @@ public class PostSaveRequestDto {
     private String content;
     private Long boardId;
     private List<Long> attachmentId;
-    private List<Long> commentId;
-    private PostListRepository postListRepository;
 
     @Builder
     public PostSaveRequestDto(String content) {
@@ -36,7 +34,6 @@ public class PostSaveRequestDto {
                 .postlistId(postlistId)
                 .boardId(boardId)
                 .attachmentId(attachmentId)
-                .commentId(commentId)
                 .build();
     }
 
