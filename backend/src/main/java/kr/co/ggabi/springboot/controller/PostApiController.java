@@ -35,24 +35,19 @@ public class PostApiController {
     @PostMapping("/{bid}")
     public Long save(@PathVariable("bid") Long bid, @RequestParam("content") String content,@RequestParam("writer") String writer, @RequestParam("title") String title, @RequestParam("is_notice") boolean is_notice, @RequestParam("file") List<MultipartFile> files) {
         try {
-            PostSaveRequestDto requestDto = new PostSaveRequestDto();
-            requestDto.setContent(content);
+            PostSaveRequestDto requestDto = new PostSaveRequestDto(content);
             requestDto.setBoardId(bid);
 
-            PostListSaveRequestDto requestDto_list = new PostListSaveRequestDto();
-            requestDto_list.setWriter(writer);
-            requestDto_list.setTitle(title);
-            requestDto_list.setIs_notice(is_notice);
+            PostListSaveRequestDto requestDto_list = new PostListSaveRequestDto(writer,title,is_notice);
 
             Long postlistId = postListService.save(requestDto_list).getId();
             requestDto.setPostlistId(postlistId);
 
-
-            BoardPostSaveRequestDto requestDto_board = new BoardPostSaveRequestDto(postlistId);
-            boardService.save_postlist(requestDto_board);
+            //BOARD에서도 저장해줘야함
+            boardService.save_postlist(bid, postlistId);
 
             List<Long> attachments = new ArrayList<>();
-            if(!files.isEmpty()){
+            if(!files.isEmpty()) {
                 /* 실행되는 위치의 'files' 폴더에 파일이 저장됩니다. */
                 String savePath = System.getProperty("user.dir") + "\\files";
                 /* 파일이 저장되는 폴더가 없으면 폴더를 생성합니다. */
@@ -146,6 +141,7 @@ public class PostApiController {
     //remove post
     @DeleteMapping("/{bid}/{pid}")
     public void delete(@PathVariable("bid") Long bid, @PathVariable("pid") Long pid) {
+        //postlist, board에서도 지워야 함
         postService.delete(bid, pid);
     }
 }

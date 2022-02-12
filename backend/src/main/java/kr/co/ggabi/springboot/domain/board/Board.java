@@ -37,4 +37,8 @@ public class Board {
     public void update(String title) {
         this.title = title;
     }
+
+    public void update_post(List<Long> postlistId) {
+        this.postlistId = postlistId;
+    }
 }

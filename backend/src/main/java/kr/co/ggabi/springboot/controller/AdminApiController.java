@@ -17,7 +17,7 @@ public class AdminApiController {
     //modify board
     @PutMapping("/{bid}")
     public Long update(@PathVariable("bid") Long bid, @RequestBody BoardUpdateRequestDto requestDto) {
-        return adminService.update(bid,requestDto).getId();
+        return adminService.update(bid,requestDto);
     }
     //create a board
     @PostMapping("/board")

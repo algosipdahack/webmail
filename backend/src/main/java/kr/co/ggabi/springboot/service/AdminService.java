@@ -69,11 +69,12 @@ public class AdminService {
     }
 
     @Transactional
-    public Board update(Long id, BoardUpdateRequestDto requestDto) {
+    public Long update(Long id, BoardUpdateRequestDto requestDto) {
         Board board = boardRepository.findById(id).orElseThrow(()->new IllegalArgumentException("해당 게시판이 없습니다. id="+id));
         board.update(requestDto.getTitle());
-        return board;
+        return board.getId();
     }
+
     @Transactional
     public void delete_board(Long bid) {
         Board board = boardRepository.findById(bid).orElseThrow(()->new IllegalArgumentException("해당 게시판이 없습니다. id="+bid));

@@ -29,7 +29,7 @@ public class CommentService {
     public Comment save(CommentSaveRequestDto requestDto) {
         Long writerId = null;
         List<Member> members = membersRepository.findAllDesc();
-        for(Member iter: members){
+        for(Member iter: members) {
             if(iter.getUsername().equals(requestDto.getWriter())) {
                 writerId = iter.getId();
                 break;

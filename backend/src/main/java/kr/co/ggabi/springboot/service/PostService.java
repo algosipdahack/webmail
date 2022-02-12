@@ -1,7 +1,9 @@
 package kr.co.ggabi.springboot.service;
 import kr.co.ggabi.springboot.domain.attachment.Attachment;
+import kr.co.ggabi.springboot.domain.board.Board;
 import kr.co.ggabi.springboot.domain.comments.Comment;
 import kr.co.ggabi.springboot.domain.posts.Post;
+import kr.co.ggabi.springboot.domain.posts.PostList;
 import kr.co.ggabi.springboot.dto.PostListResponseDto;
 import kr.co.ggabi.springboot.dto.PostResponseDto;
 import kr.co.ggabi.springboot.dto.PostSaveRequestDto;
@@ -22,6 +24,7 @@ public class PostService {
     private final PostListRepository postListRepository;
     private final AttachmentRepository attachmentRepository;
     private final CommentRepository commentRepository;
+    private final BoardRepository boardRepository;
 
     @Transactional
     public Post save(PostSaveRequestDto requestDto) {
@@ -35,12 +38,15 @@ public class PostService {
         return post.getId();
     }
 
-    public PostResponseDto findById(Long board_id, Long pid) {
+    public PostResponseDto findById(Long bid, Long pid) {
         Post post = postRepository.findById(pid).orElseThrow(()->new IllegalArgumentException("해당 게시물이 없습니다. id="+pid));
+
         PostResponseDto tmp = new PostResponseDto(post);
+
         //    private PostList postlist;
         Long postlistid = post.getPostlistId();
         tmp.setPostlist(postListRepository.findById(postlistid).orElseThrow(()->new IllegalArgumentException("해당 게시물이 없습니다. id="+postlistid)));
+
         //    private List<Attachment> attachment;
         List<Long> attachmentId = post.getAttachmentId();
         List<Attachment> attachment = new ArrayList<>();
@@ -48,6 +54,7 @@ public class PostService {
             attachment.add(attachmentRepository.findById(iter).orElseThrow(()->new IllegalArgumentException("해당 첨부파일이 없습니다. id="+iter)));
         }
         tmp.setAttachment(attachment);
+
         //    private List<Comment> comment;
         List<Long> commentId = post.getCommentId();
         List<Comment> comment = new ArrayList<>();
@@ -67,14 +74,33 @@ public class PostService {
 
     @Transactional
     public void delete(Long bid,Long pid) {
-        Post post = postRepository.findById(pid).orElseThrow(()->new IllegalArgumentException("해당 게시판이 없습니다. id="+pid));
+        Post post = postRepository.findById(pid).orElseThrow(()->new IllegalArgumentException("해당 게시물이 없습니다. id="+pid));
+        //board내에서 postlistid지우기
+        PostList postlist = postListRepository.findById(post.getPostlistId()).orElseThrow(()->new IllegalArgumentException("해당 게시물이 없습니다. id="+post.getPostlistId()));
+        Board board = boardRepository.findById(bid).orElseThrow(()->new IllegalArgumentException("해당 게시판이 없습니다. id="+bid));
+        List<Long> id = board.getPostlistId();
+        for(Long iter:id) {
+            if (iter == postlist.getId()) {
+                id.remove(iter);
+                board.update_post(id);
+                break;
+            }
+        }
+        //comment도 지우기
+        List<Long> comment_id = post.getCommentId();
+        for(Long iter:comment_id) {
+            commentRepository.delete(commentRepository.findById(iter).orElseThrow(()->new IllegalArgumentException("해당 댓글이 없습니다. id="+iter)));
+        }
+        //postlist 지우기
+        postListRepository.delete(postlist);
+        //post지우기
         postRepository.delete(post);
     }
     @Transactional
     public void delete_file(Long pid) {
         List <Attachment> attachments = attachmentRepository.findAllDesc();
-        Post post = postRepository.findById(pid).orElseThrow(()->new IllegalArgumentException("해당 게시물이 없습니다. id="+pid));
-        List <Long> attachmentId = post.getAttachmentId();
+        List <Long> attachmentId = postRepository.findById(pid).orElseThrow(()->new IllegalArgumentException("해당 게시물이 없습니다. id="+pid)).getAttachmentId();
+
         for (Attachment iter : attachments) {
             for(Long post_iter : attachmentId) {
                 if(iter.getId().equals(post_iter)) {
@@ -82,5 +108,13 @@ public class PostService {
                 }
             }
         }
+    }
+    @Transactional
+    public Long save_comment(Long pid, Long comment_id) {
+        Post post = postRepository.findById(pid).orElseThrow(()->new IllegalArgumentException("해당 게시물이 없습니다. id="+pid));
+        List<Long> old_id = post.getCommentId();
+        old_id.add(comment_id);
+        post.update_comment(old_id);
+        return post.getId();
     }
 }

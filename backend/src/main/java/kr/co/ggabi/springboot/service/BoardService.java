@@ -1,10 +1,7 @@
 package kr.co.ggabi.springboot.service;
 import kr.co.ggabi.springboot.domain.board.Board;
 import kr.co.ggabi.springboot.domain.posts.PostList;
-import kr.co.ggabi.springboot.dto.BoardListResponseDto;
-import kr.co.ggabi.springboot.dto.BoardPostSaveRequestDto;
-import kr.co.ggabi.springboot.dto.BoardResponseDto;
-import kr.co.ggabi.springboot.dto.BoardSaveRequestDto;
+import kr.co.ggabi.springboot.dto.*;
 import kr.co.ggabi.springboot.repository.BoardRepository;
 import kr.co.ggabi.springboot.repository.PostListRepository;
 import lombok.RequiredArgsConstructor;
@@ -41,7 +38,11 @@ public class BoardService {
                 .collect(Collectors.toList());
     }
     @Transactional
-    public Long save_postlist(BoardPostSaveRequestDto requestDto) {
-        return boardRepository.save(requestDto.toEntity()).getId();
+    public Long save_postlist(Long bid, Long postlist_id) {
+        Board board = boardRepository.findById(bid).orElseThrow(()->new IllegalArgumentException("해당 게시판이 없습니다. id="+bid));
+        List<Long> old_id = board.getPostlistId();
+        old_id.add(postlist_id);
+        board.update_post(old_id);
+        return board.getId();
     }
 }

@@ -16,8 +16,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BoardSaveRequestDto {
     private String title;
-    private List<Long> list = new ArrayList<>();
-
     @Builder
     public BoardSaveRequestDto(String title) {
         this.title = title;
@@ -25,7 +23,6 @@ public class BoardSaveRequestDto {
     public Board toEntity() {
         return Board.builder()
                 .title(title)
-                .postlistId(list)
                 .build();
     }
 }

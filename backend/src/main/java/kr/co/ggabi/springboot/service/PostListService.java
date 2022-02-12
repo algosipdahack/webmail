@@ -54,13 +54,20 @@ public class PostListService {
                 .map(PostListResponseDto::new)// == .map(posts->new PostsListResponseDto(posts))
                 .collect(Collectors.toList());
 
-        List<Post> post = postRepository.findAllDesc();
-        for(Post iter:post){
-            Board board = boardRepository.findById(iter.getBoardId()).orElseThrow(()->new IllegalArgumentException("해당 게시판이 없습니다. id="+iter.getBoardId()));
-            for(PostListResponseDto iter_list:tmp){
-                if(iter_list.getId().equals(iter.getId())){
-                    iter_list.setBoard(board);
+        List<Board> board = boardRepository.findAllDesc();
+        for(PostListResponseDto iter_list:tmp){
+            for(Board iter:board){
+                int flag = 0;
+                List<Long> list = iter.getPostlistId();
+                for(Long list_id:list) {
+                    if(list_id == iter_list.getId()) {
+                        iter_list.setBoard(iter);
+                        flag = 1;
+                        break;
+                    }
                 }
+                if(flag == 1)
+                    break;
             }
         }
         return tmp;
