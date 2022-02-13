@@ -23,6 +23,10 @@ public class PostList {
     @Column(length = 500, nullable = false)
     private String title;
 
+    @Builder.Default
+    @Column
+    private Long postId;
+
     @Column
     private String writer;
 
@@ -40,15 +44,19 @@ public class PostList {
     @CreationTimestamp
     private Date isCreated;
 
-    public PostList(String title, String writer, Long writerId,Boolean is_notice) {//생성자
+    public PostList(String title, String writer, Long writerId,Boolean is_notice,Long postId) {//생성자
         this.title = title;
         this.writer = writer;
         this.is_notice = is_notice;
         this.writerId = writerId;
+        this.postId = postId;
     }
 
     public void update(String title, boolean is_notice) {
         this.title = title;
         this.is_notice = is_notice;
+    }
+    public void postId(Long postId) {
+        this.postId = postId;
     }
 }

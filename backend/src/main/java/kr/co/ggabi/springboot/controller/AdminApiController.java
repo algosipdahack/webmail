@@ -38,8 +38,8 @@ public class AdminApiController {
     }
 
     //게시물 선택삭제
-    @RequestMapping(value="/post",method = RequestMethod.POST)
-    public void ajaxTest(@RequestBody List<Long> request) {
+    @PostMapping("/post")
+    public void ajaxTest(@RequestParam("pid")List<Long> request) {
         for(Long id : request){
             adminService.delete_post(null, id);
         }

@@ -19,6 +19,7 @@ public class PostListResponseDto {
     private Boolean is_notice;
     private Board board;
     public Date isCreated;
+    public Long postId;
 
     public PostListResponseDto(PostList entity) {
         this.id = entity.getId();
@@ -28,5 +29,6 @@ public class PostListResponseDto {
         this.writerId = entity.getWriterId();
         this.is_notice = entity.getIs_notice();
         this.isCreated = entity.getIsCreated();
+        this.postId = entity.getPostId();
     }
 }

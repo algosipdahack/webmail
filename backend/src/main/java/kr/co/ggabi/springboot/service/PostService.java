@@ -45,7 +45,7 @@ public class PostService {
 
         //    private PostList postlist;
         Long postlistid = post.getPostlistId();
-        tmp.setPostlist(postListRepository.findById(postlistid).orElseThrow(()->new IllegalArgumentException("해당 게시물이 없습니다. id="+postlistid)));
+        tmp.setPostlist(postListRepository.findById(postlistid).orElseThrow(()->new IllegalArgumentException("해당 게시물(postlist)이 없습니다. id="+postlistid)));
 
         //    private List<Attachment> attachment;
         List<Long> attachmentId = post.getAttachmentId();

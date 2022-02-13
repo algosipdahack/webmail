@@ -20,7 +20,7 @@ public class PostListSaveRequestDto {
     private String writer;
     private Long writerId;
     private Boolean is_notice;
-
+    private Long postId;
     @Builder
     public PostListSaveRequestDto(String writer, String title, boolean is_notice) {
         this.title = title;

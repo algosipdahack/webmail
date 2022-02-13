@@ -19,7 +19,6 @@ public class PostListService {
     private final PostRepository postRepository;
     private final PostListRepository postListRepository;
     private final BoardRepository boardRepository;
-    private final AttachmentRepository attachmentRepository;
     private final MembersRepository membersRepository;
 
     @Transactional
@@ -35,16 +34,24 @@ public class PostListService {
         requestDto.setWriterId(writerId);
         return postListRepository.save(requestDto.toEntity());
     }
-
+    @Transactional
+    public PostList savePostId(Long pid) {
+        Long postlistId = postRepository.findById(pid).orElseThrow(()->new IllegalArgumentException("해당 게시물이 없습니다. id="+pid)).getPostlistId();
+        PostList postList = postListRepository.findById(postlistId).orElseThrow(()->new IllegalArgumentException("해당 게시물이 없습니다. id="+postlistId));
+        postList.postId(pid);
+        return postList;
+    }
     @Transactional
     public PostList update(Long bid, Long pid, PostListUpdateRequestDto requestDto) {
-        PostList postList = postListRepository.findById(pid).orElseThrow(()->new IllegalArgumentException("해당 게시물이 없습니다. id="+pid));
+        Long postlistId = postRepository.findById(pid).orElseThrow(()->new IllegalArgumentException("해당 게시물이 없습니다. id="+pid)).getPostlistId();
+        PostList postList = postListRepository.findById(postlistId).orElseThrow(()->new IllegalArgumentException("해당 게시물이 없습니다. id="+postlistId));
         postList.update(requestDto.getTitle(),requestDto.getIs_notice());
         return postList;
     }
 
     public PostListResponseDto findById(Long bid, Long pid) {
-        PostList postList = postListRepository.findById(pid).orElseThrow(()->new IllegalArgumentException("해당 게시물이 없습니다. id="+pid));
+        Long postlistId = postRepository.findById(pid).orElseThrow(()->new IllegalArgumentException("해당 게시물이 없습니다. id="+pid)).getPostlistId();
+        PostList postList = postListRepository.findById(postlistId).orElseThrow(()->new IllegalArgumentException("해당 게시물이 없습니다. id="+postlistId));
         return new PostListResponseDto(postList);
     }
 
@@ -75,7 +82,8 @@ public class PostListService {
 
     @Transactional
     public void delete(Long bid,Long pid) {
-        PostList postList = postListRepository.findById(pid).orElseThrow(()->new IllegalArgumentException("해당 게시판이 없습니다. id="+pid));
+        Long postlistId = postRepository.findById(pid).orElseThrow(()->new IllegalArgumentException("해당 게시물이 없습니다. id="+pid)).getPostlistId();
+        PostList postList = postListRepository.findById(postlistId).orElseThrow(()->new IllegalArgumentException("해당 게시판이 없습니다. id="+postlistId));
         postListRepository.delete(postList);
     }
 }
