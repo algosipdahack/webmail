@@ -38,7 +38,6 @@ public class PostApiController {
             requestDto.setBoardId(bid);
 
             PostListSaveRequestDto requestDto_list = new PostListSaveRequestDto(writer,title,is_notice);
-
             Long postlistId = postListService.save(requestDto_list).getId();
             requestDto.setPostlistId(postlistId);
 

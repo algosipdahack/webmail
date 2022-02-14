@@ -39,7 +39,7 @@ public class PostList {
 
     @Builder.Default
     @Column(nullable = false)
-    private int hits = 0;
+    private Integer hits = 0;
 
     @CreationTimestamp
     private Date isCreated;
@@ -56,8 +56,10 @@ public class PostList {
         this.title = title;
         this.is_notice = is_notice;
     }
-    public void update_hit(int hists) {
-        this.hits = hits + 1;
+    public void update_hit(Integer hits) {
+        System.out.println(this.hits);
+        this.hits = hits+1;
+        System.out.println(this.hits);
     }
     public void postId(Long postId) {
         this.postId = postId;
