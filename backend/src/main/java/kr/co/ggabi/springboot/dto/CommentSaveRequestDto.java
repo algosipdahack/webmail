@@ -16,7 +16,7 @@ import java.util.List;
 public class CommentSaveRequestDto {
     private Long parentId;
     private String content;
-    private Long writerId;
+    private String writerName;
     private String writer;
     private Long postId;
 
@@ -29,7 +29,7 @@ public class CommentSaveRequestDto {
     public Comment toEntity() {
         return Comment.builder()
                 .content(content)
-                .writerId(writerId)
+                .writerName(writerName)
                 .parentId(parentId)
                 .postId(postId)
                 .writer(writer)

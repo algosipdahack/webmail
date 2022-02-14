@@ -9,13 +9,13 @@ public class CommentListResponseDto {
     private Long parent_id;
     private String content;
     private String writer;
-    private Long writerId;
+    private String writerName;
 
     public CommentListResponseDto(Comment entity) {
         this.id = entity.getId();
         this.parent_id = entity.getParentId();
         this.content = entity.getContent();
         this.writer = entity.getWriter();
-        this.writerId = entity.getWriterId();
+        this.writerName = entity.getWriterName();
     }
 }

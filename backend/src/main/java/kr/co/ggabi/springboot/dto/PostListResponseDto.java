@@ -14,7 +14,7 @@ public class PostListResponseDto {
     private Long id;
     private String title;
     private String writer;
-    private Long writerId;
+    private String writerName;
     private int hits;
     private Boolean is_notice;
     private Board board;
@@ -26,7 +26,7 @@ public class PostListResponseDto {
         this.title = entity.getTitle();
         this.writer = entity.getWriter();
         this.hits = entity.getHits();
-        this.writerId = entity.getWriterId();
+        this.writerName = entity.getWriterName();
         this.is_notice = entity.getIs_notice();
         this.isCreated = entity.getIsCreated();
         this.postId = entity.getPostId();

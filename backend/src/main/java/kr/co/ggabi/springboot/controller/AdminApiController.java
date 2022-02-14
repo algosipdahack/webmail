@@ -5,6 +5,7 @@ import kr.co.ggabi.springboot.dto.BoardUpdateRequestDto;
 import kr.co.ggabi.springboot.service.AdminService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -38,11 +39,12 @@ public class AdminApiController {
     }
 
     //게시물 선택삭제
-    @PostMapping("/post")
-    public void ajaxTest(@RequestParam("pid")List<Long> request) {
-        for(Long id : request){
-            adminService.delete_post(null, id);
+    @PostMapping("/{bid}/post")
+    public void ajaxTest(@PathVariable("bid") Long bid, @RequestParam("pid") List<String> request) {
+        System.out.println(request);
+        for (String id : request) {
+            Long lid = Long.parseLong(id);
+            adminService.delete_post(bid, lid);
         }
     }
-
 }

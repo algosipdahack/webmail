@@ -18,7 +18,7 @@ import java.util.List;
 public class PostListSaveRequestDto {
     private String title;
     private String writer;
-    private Long writerId;
+    private String writerName;
     private Boolean is_notice;
     private Long postId;
     @Builder
@@ -31,7 +31,7 @@ public class PostListSaveRequestDto {
         return PostList.builder()
                 .title(title)
                 .writer(writer)
-                .writerId(writerId)
+                .writerName(writerName)
                 .is_notice(is_notice)
                 .build();
     }

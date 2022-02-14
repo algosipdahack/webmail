@@ -23,15 +23,15 @@ public class PostListService {
 
     @Transactional
     public PostList save(PostListSaveRequestDto requestDto) {
-        Long writerId = null;
+        String writerName = null;
         List<Member> members = membersRepository.findAllDesc();
         for(Member iter: members) {
             if(iter.getUsername().equals(requestDto.getWriter())) {
-                writerId = iter.getId();
+                writerName = iter.getNickname();
                 break;
             }
         }
-        requestDto.setWriterId(writerId);
+        requestDto.setWriterName(writerName);
         return postListRepository.save(requestDto.toEntity());
     }
     @Transactional

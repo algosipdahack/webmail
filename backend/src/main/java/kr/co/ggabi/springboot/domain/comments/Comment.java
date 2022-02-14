@@ -27,17 +27,17 @@ public class Comment {
     private String writer; // username
 
     @Column
-    private Long writerId;
+    private String writerName;
 
     @CreationTimestamp
     private Date isCreated;
 
     @Builder // 빌더 형태로 만들어줌
-    public Comment(Long parentId, String content, String writer, Long writerId,Long postId) {//생성자
+    public Comment(Long parentId, String content, String writer, String writerName,Long postId) {//생성자
         this.parentId = parentId;
         this.content = content;
         this.writer = writer;
-        this.writerId = writerId;
+        this.writerName = writerName;
         this.postId = postId;
     }
 

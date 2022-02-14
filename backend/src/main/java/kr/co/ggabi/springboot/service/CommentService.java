@@ -14,6 +14,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,20 +24,19 @@ import java.util.stream.Collectors;
 public class CommentService {
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
-    private final BoardRepository boardRepository;
     private final MembersRepository membersRepository;
 
     @Transactional
     public Comment save(CommentSaveRequestDto requestDto) {
-        Long writerId = null;
+        String writerName = null;
         List<Member> members = membersRepository.findAllDesc();
         for(Member iter: members) {
             if(iter.getUsername().equals(requestDto.getWriter())) {
-                writerId = iter.getId();
+                writerName = iter.getNickname();
                 break;
             }
         }
-        requestDto.setWriterId(writerId);
+        requestDto.setWriterName(writerName);
         return commentRepository.save(requestDto.toEntity());
     }
 
@@ -61,17 +62,36 @@ public class CommentService {
     @Transactional
     public void delete(Long bid, Long pid, Long cid) {
         Comment comment = commentRepository.findById(cid).orElseThrow(()->new IllegalArgumentException("해당 댓글이 없습니다. id="+cid));
+        Post post = postRepository.findById(pid).orElseThrow(()->new IllegalArgumentException("해당 게시물이 없습니다. id="+pid));
         List<Comment> list_c = commentRepository.findAllDesc();
+        List<Long> post_comment = new ArrayList<>();
         //댓글인 경우
         if(comment.getParentId() == null){
             for (Comment iter_comment : list_c) {
                 //대댓글인 경우
+                if(iter_comment.getParentId() == null) continue;
                 if(iter_comment.getParentId().equals(comment.getId())){
                     //대댓글 삭제
+                    post_comment.add(iter_comment.getId());
                     commentRepository.delete(iter_comment);
                 }
             }
         }
+        post_comment.add(cid);
+
         commentRepository.delete(comment);
+
+        List <Long> p_comment = post.getCommentId();
+        Iterator<Long> it = p_comment.iterator();
+        while(it.hasNext()){
+            Long tmp = it.next();
+            for(Long iter_post:post_comment){
+                if(tmp.equals(iter_post)) {
+                    it.remove();
+                    break;
+                }
+            }
+        }
+        post.update_comment(p_comment);
     }
 }

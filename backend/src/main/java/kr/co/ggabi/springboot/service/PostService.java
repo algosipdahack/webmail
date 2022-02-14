@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -40,11 +41,13 @@ public class PostService {
 
     public PostResponseDto findById(Long bid, Long pid) {
         Post post = postRepository.findById(pid).orElseThrow(()->new IllegalArgumentException("해당 게시물이 없습니다. id="+pid));
-
         PostResponseDto tmp = new PostResponseDto(post);
 
         //    private PostList postlist;
         Long postlistid = post.getPostlistId();
+        PostList postList = postListRepository.findById(postlistid).orElseThrow(()->new IllegalArgumentException("해당 게시물이 없습니다. id="+postlistid));
+        postList.update_hit(postList.getHits());
+
         tmp.setPostlist(postListRepository.findById(postlistid).orElseThrow(()->new IllegalArgumentException("해당 게시물(postlist)이 없습니다. id="+postlistid)));
 
         //    private List<Attachment> attachment;
@@ -79,17 +82,19 @@ public class PostService {
         PostList postlist = postListRepository.findById(post.getPostlistId()).orElseThrow(()->new IllegalArgumentException("해당 게시물이 없습니다. id="+post.getPostlistId()));
         Board board = boardRepository.findById(bid).orElseThrow(()->new IllegalArgumentException("해당 게시판이 없습니다. id="+bid));
         List<Long> id = board.getPostlistId();
-        for(Long iter:id) {
-            if (iter == postlist.getId()) {
-                id.remove(iter);
+        Iterator<Long> iter = id.iterator();
+        while(iter.hasNext()){
+            Long tmp = iter.next();
+            if (tmp == postlist.getId()) {
+                iter.remove();
                 board.update_post(id);
                 break;
             }
         }
         //comment도 지우기
         List<Long> comment_id = post.getCommentId();
-        for(Long iter:comment_id) {
-            commentRepository.delete(commentRepository.findById(iter).orElseThrow(()->new IllegalArgumentException("해당 댓글이 없습니다. id="+iter)));
+        for(Long iter_comment:comment_id) {
+            commentRepository.delete(commentRepository.findById(iter_comment).orElseThrow(()->new IllegalArgumentException("해당 댓글이 없습니다. id="+iter_comment)));
         }
         //postlist 지우기
         postListRepository.delete(postlist);
@@ -114,6 +119,22 @@ public class PostService {
         Post post = postRepository.findById(pid).orElseThrow(()->new IllegalArgumentException("해당 게시물이 없습니다. id="+pid));
         List<Long> old_id = post.getCommentId();
         old_id.add(comment_id);
+        post.update_comment(old_id);
+        return post.getId();
+    }
+    public Long delete_comment(Long pid, List<Long> comment_id){
+        Post post = postRepository.findById(pid).orElseThrow(()->new IllegalArgumentException("해당 게시물이 없습니다. id="+pid));
+        List<Long> old_id = post.getCommentId();
+        Iterator<Long> it = old_id.iterator();
+        for(Long iter:comment_id) {
+            while(it.hasNext()){
+                Long tmp = it.next();
+                if(tmp == iter) {
+                    it.remove();
+                    break;
+                }
+            }
+        }
         post.update_comment(old_id);
         return post.getId();
     }

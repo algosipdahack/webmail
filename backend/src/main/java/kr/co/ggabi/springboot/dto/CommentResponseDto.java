@@ -11,7 +11,7 @@ public class CommentResponseDto {
     private Long parentId;
     private String content;
     private String writer;
-    private Long writerId;
+    private String writerName;
     public Date isCreated;
 
     public CommentResponseDto(Comment entity) {
@@ -19,7 +19,7 @@ public class CommentResponseDto {
         this.parentId = entity.getParentId();
         this.content = entity.getContent();
         this.writer = entity.getWriter();
-        this.writerId = entity.getWriterId();
+        this.writerName = entity.getWriterName();
         this.isCreated = entity.getIsCreated();
     }
 }

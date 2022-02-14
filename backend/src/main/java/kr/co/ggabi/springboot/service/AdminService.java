@@ -115,17 +115,19 @@ public class AdminService {
         PostList postlist = postListRepository.findById(post.getPostlistId()).orElseThrow(()->new IllegalArgumentException("해당 게시물이 없습니다. id="+post.getPostlistId()));
         Board board = boardRepository.findById(bid).orElseThrow(()->new IllegalArgumentException("해당 게시판이 없습니다. id="+bid));
         List<Long> id = board.getPostlistId();
-        for(Long iter:id) {
-            if (iter == postlist.getId()) {
-                id.remove(iter);
+        Iterator<Long> iter = id.iterator();
+        while(iter.hasNext()){
+            Long tmp = iter.next();
+            if (tmp == postlist.getId()) {
+                iter.remove();
                 board.update_post(id);
                 break;
             }
         }
         //comment도 지우기
         List<Long> comment_id = post.getCommentId();
-        for(Long iter:comment_id) {
-            commentRepository.delete(commentRepository.findById(iter).orElseThrow(()->new IllegalArgumentException("해당 댓글이 없습니다. id="+iter)));
+        for(Long iter_comment:comment_id) {
+            commentRepository.delete(commentRepository.findById(iter_comment).orElseThrow(()->new IllegalArgumentException("해당 댓글이 없습니다. id="+iter_comment)));
         }
         //postlist 지우기
         postListRepository.delete(postlist);
