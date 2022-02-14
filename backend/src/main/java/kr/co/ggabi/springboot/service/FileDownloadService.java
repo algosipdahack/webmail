@@ -36,4 +36,19 @@ public class FileDownloadService {
         System.out.println("cannot found resource");
         return null;
     }
+
+    public Resource loadFileForBoard(Long bid, Long postlistId, String filename){
+        try{
+            String path = "./downloads" + File.separator + "board" + File.separator + Long.toString(bid) + File.separator + Long.toString(postlistId) + File.separator + filename;
+            Path filePath = Paths.get(path);
+            Resource resource = new UrlResource(filePath.toUri());
+            if(resource.exists()){
+                return resource;
+            }
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        System.out.println("cannot found resource");
+        return null;
+    }
 }

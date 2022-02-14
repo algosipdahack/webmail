@@ -1,17 +1,22 @@
 package kr.co.ggabi.springboot.controller;
 import kr.co.ggabi.springboot.domain.attachment.Attachment;
 import kr.co.ggabi.springboot.domain.posts.Post;
+import kr.co.ggabi.springboot.domain.posts.PostList;
 import kr.co.ggabi.springboot.dto.*;
-import kr.co.ggabi.springboot.service.AttachmentService;
-import kr.co.ggabi.springboot.service.BoardService;
-import kr.co.ggabi.springboot.service.PostListService;
-import kr.co.ggabi.springboot.service.PostService;
+import kr.co.ggabi.springboot.jwt.TokenProvider;
+import kr.co.ggabi.springboot.service.*;
 import kr.co.ggabi.springboot.util.MD5Generator;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,6 +28,8 @@ public class PostApiController {
     private final PostListService postListService;
     private final AttachmentService attachmentService;
     private final BoardService boardService;
+    private final TokenProvider tokenProvider;
+    private final FileDownloadService service;
 
     //전체 게시판 목록 출력
     @GetMapping("/post")
@@ -46,27 +53,27 @@ public class PostApiController {
 
             List<Long> attachments = new ArrayList<>();
             if(!files.isEmpty()) {
-                /* 실행되는 위치의 'files' 폴더에 파일이 저장됩니다. */
-                String savePath = System.getProperty("user.dir") + "\\files";
-                /* 파일이 저장되는 폴더가 없으면 폴더를 생성합니다. */
-                if (!new File(savePath).exists()) {
-                    try{
-                        new File(savePath).mkdir();
-                    }
-                    catch(Exception e){
-                        e.getStackTrace();
-                    }
-                }
                 for(MultipartFile file: files) {
+                    String filePath = System.getProperty("user.dir") + File.separator + "downloads"+  File.separator +"board" + File.separator + Long.toString(bid) + File.separator + Long.toString(postlistId) + File.separator + file;
+                    System.out.println(filePath);
+                    File downloads = new File("./downloads");
+                    downloads.mkdirs();
+                    File mailBoxDir = new File("./downloads" + File.separator + "board");
+                    mailBoxDir.mkdirs();
+                    File uidDir = new File("./downloads" + File.separator + "board" + File.separator + Long.toString(bid));
+                    uidDir.mkdirs();
+                    File idxDir = new File("./downloads" + File.separator + "board" + File.separator + Long.toString(bid) + File.separator + Long.toString(postlistId));
+                    idxDir.mkdirs();
+
                     String origFilename = file.getOriginalFilename();
                     String filename = new MD5Generator(origFilename).toString();
-                    String filePath = savePath + "\\" + filename;
                     file.transferTo(new File(filePath));
+                    String link = "/api/board/download/" + Long.toString(bid)+"/"+Long.toString(postlistId) + "/" + filename;
 
                     AttachmentDto fileDto = new AttachmentDto();
                     fileDto.setOrigFilename(origFilename);
                     fileDto.setFilename(filename);
-                    fileDto.setFilePath(filePath);
+                    fileDto.setFilePath(link);
                     fileDto.setSize(file.getSize());
                     attachments.add(attachmentService.saveFile(fileDto).getId());
                 }
@@ -91,36 +98,35 @@ public class PostApiController {
         requestDto_list.setTitle(title);
         requestDto_list.setIs_notice(is_notice);
 
-        postListService.update(bid,pid,requestDto_list);
+        Long postlistId = postListService.update(bid,pid,requestDto_list).getId();
         //해당 게시물의 첨부파일 일단 모두 지움
         postService.delete_file(pid);
         //다시 첨부파일 저장
         try {
             List<Long> attachments = new ArrayList<>();
             if(!files.isEmpty()){
-                /* 실행되는 위치의 'files' 폴더에 파일이 저장됩니다. */
-                String savePath = System.getProperty("user.dir") + "\\files";
-                /* 파일이 저장되는 폴더가 없으면 폴더를 생성합니다. */
-                if (!new File(savePath).exists()) {
-                    try{
-                        new File(savePath).mkdir();
-                    }
-                    catch(Exception e){
-                        e.getStackTrace();
-                    }
-                }
                 for(MultipartFile file: files) {
+                    String filePath = System.getProperty("user.dir") + File.separator + "downloads"+  File.separator +"board" + File.separator + Long.toString(bid) + File.separator + Long.toString(postlistId) + File.separator + file;
+                    System.out.println(filePath);
+                    File downloads = new File("./downloads");
+                    downloads.mkdirs();
+                    File mailBoxDir = new File("./downloads" + File.separator + "board");
+                    mailBoxDir.mkdirs();
+                    File uidDir = new File("./downloads" + File.separator + "board" + File.separator + Long.toString(bid));
+                    uidDir.mkdirs();
+                    File idxDir = new File("./downloads" + File.separator + "board" + File.separator + Long.toString(bid) + File.separator + Long.toString(postlistId));
+                    idxDir.mkdirs();
                     String origFilename = file.getOriginalFilename();
                     String filename = new MD5Generator(origFilename).toString();
-                    String filePath = savePath + "\\" + filename;
-                    file.transferTo(new File(filePath));
+                    file.transferTo(new File(filePath,filename));
+                    System.out.println("Transfer");
+                    String link = "/api/board/download/" + Long.toString(bid)+"/"+Long.toString(postlistId) + "/" + filename;
 
                     AttachmentDto fileDto = new AttachmentDto();
                     fileDto.setOrigFilename(origFilename);
                     fileDto.setFilename(filename);
-                    fileDto.setFilePath(filePath);
+                    fileDto.setFilePath(link);
                     fileDto.setSize(file.getSize());
-
                     attachments.add(attachmentService.saveFile(fileDto).getId());
                 }
             }
@@ -143,5 +149,25 @@ public class PostApiController {
     public void delete(@PathVariable("bid") Long bid, @PathVariable("pid") Long pid) {
         //postlist, board에서도 지워야 함
         postService.delete(bid, pid);
+    }
+
+    @GetMapping("/download/{bid}/{postlistId}/{filename:.+}")
+    public ResponseEntity<Resource> downloadFile(HttpServletRequest request, @PathVariable("bid") Long bid, @PathVariable("postlistId") Long id, @PathVariable("filename") String filename) throws IOException {
+        Resource resource = service.loadFileForBoard(bid, id, filename);
+        String contentType = null;
+        try {
+            contentType = request.getServletContext().
+                    getMimeType(resource.getFile().getAbsolutePath());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if (contentType == null) {
+            contentType = "application/octet-stream";
+        }
+        System.out.println(contentType);
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(contentType))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+                .body(resource);
     }
 }
