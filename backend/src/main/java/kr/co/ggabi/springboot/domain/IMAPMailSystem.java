@@ -6,6 +6,7 @@ import kr.co.ggabi.springboot.dto.AttachmentResponseDto;
 import kr.co.ggabi.springboot.dto.MailResponseDto;
 import kr.co.ggabi.springboot.dto.MailboxResponseDto;
 import kr.co.ggabi.springboot.jwt.TokenProvider;
+import kr.co.ggabi.springboot.repository.AddressRepository;
 import kr.co.ggabi.springboot.repository.MembersRepository;
 import kr.co.ggabi.springboot.repository.ReceivedWebMailRepository;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +31,7 @@ public class IMAPMailSystem {
 
     private final TokenProvider tokenProvider;
     private final MembersRepository membersRepository;
+    private final AddressRepository addressRepository;
     private final ReceivedWebMailRepository receivedWebMailRepository;
 
     private Session session;
@@ -107,7 +109,7 @@ public class IMAPMailSystem {
         folder.setFlags(unreadMessages, seenFlag, false);
 
 
-        String username = membersRepository.findById(id).get().getUsername();
+        String username = membersRepository.findById(id).orElseThrow(()->new IllegalArgumentException("해당 멤버가 없습니다. id="+id)).getAddress().getUsername();
 
         for (Message m : unreadMessages) {
             MailboxResponseDto mailboxResponseDto = new MailboxResponseDto();
@@ -245,7 +247,7 @@ public class IMAPMailSystem {
             res.content = (String) content;
             res.file = new HashMap<>();
         }
-        String username = membersRepository.findById(uid).get().getUsername();
+        String username = membersRepository.findById(uid).orElseThrow(()->new IllegalArgumentException("해당 멤버가 없습니다. id="+uid)).getAddress().getUsername();
         if (mailBox.equals("INBOX")) {
             int flagMax = 0;
             Optional<List<ReceivedWebMail>> optional = receivedWebMailRepository.findAllByUsernameAndMailId(username, (long) idx);
@@ -350,7 +352,8 @@ public class IMAPMailSystem {
 
     public long login(String host, String token, String mailbox) throws Exception {
         String username = tokenProvider.getUsernameFromToken(token);
-        Optional<Member> optional = membersRepository.findByUsername(username);
+        kr.co.ggabi.springboot.domain.users.Address address = addressRepository.findByUsername(username).orElseThrow(()->new IllegalArgumentException("해당 멤버가 없습니다. username="+username));
+        Optional<Member> optional = membersRepository.findByAddress(address);
         if(!optional.isPresent()) return -1;
         Member member = optional.get();
         String password = member.getPassword().substring(6);

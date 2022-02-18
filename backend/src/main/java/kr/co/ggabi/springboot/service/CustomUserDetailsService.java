@@ -1,6 +1,8 @@
 package kr.co.ggabi.springboot.service;
 
+import kr.co.ggabi.springboot.domain.users.Address;
 import kr.co.ggabi.springboot.domain.users.Member;
+import kr.co.ggabi.springboot.repository.AddressRepository;
 import kr.co.ggabi.springboot.repository.MembersRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
@@ -18,20 +20,23 @@ import java.util.Collections;
 @AllArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {
     private final MembersRepository membersRepository;
+    private final AddressRepository addressRepository;
 
     @Override
     @Transactional
-    public UserDetails loadUserByUsername(final String username){
-        return membersRepository.findOneWithAuthorityByUsername(username)
-                .map(member -> createUser(username, member))
-                .orElseThrow(() -> new UsernameNotFoundException(username + " -> 데이터베이스에서 찾을 수 없습니다."));
+    public UserDetails loadUserByUsername(final String password){
+
+        return membersRepository.findOneWithAuthorityByPassword(password)
+                .map(member -> createUser(member))
+                .orElseThrow(() -> new UsernameNotFoundException(password + " -> 데이터베이스에서 찾을 수 없습니다."));
     }
 
-    private User createUser(String username, Member member){
+    private User createUser(Member member){
         /*if(!member.getIsPermitted()){
             throw new RuntimeException(username + " -> 활성화되어 있지 않습니다.");
         }*/
         GrantedAuthority grantedAuthority = new SimpleGrantedAuthority(member.getAuthority().toString());
-        return new User(member.getUsername(), member.getPassword(), Collections.singleton(grantedAuthority));
+
+        return new User(member.getAddress().getUsername(), member.getPassword(), Collections.singleton(grantedAuthority));
     }
 }

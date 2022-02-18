@@ -31,8 +31,8 @@ public class AuthController {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
 
     @PostMapping("/signup")
-    public ResponseEntity<MembersSaveResponseDto> save(@RequestBody MembersSaveRequestDto requestDto) throws IOException {
-        MembersSaveResponseDto res = createMemberService.save(requestDto);
+    public ResponseEntity<MembersSaveResponseDto> save(@RequestBody AddressSaveRequestDto addressSaveRequestDto, @RequestBody MembersSaveRequestDto membersSaveRequestDto) throws IOException {
+        MembersSaveResponseDto res = createMemberService.save(addressSaveRequestDto,membersSaveRequestDto);
         return new ResponseEntity<>(res, new HttpHeaders(), HttpStatus.OK);
     }
 

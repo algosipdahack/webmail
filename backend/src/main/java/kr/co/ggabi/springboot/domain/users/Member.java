@@ -22,47 +22,31 @@ public class Member {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable=false, unique=true)
-    private String username;
-
     @Column(nullable=false)
     private String password;
-
-    @Column(nullable=false, unique=true)
-    private String nickname;
-
-    @Column(nullable=false, unique=true)
-    private String phone;
 
     @Column(nullable=false)
     private Date birthday;
 
-    private String email;
-
-    private String gender;
-
-    private String department;
-
-    private String position;
+    @OneToOne(fetch = FetchType.LAZY) // 사용시점에 조회가 됨
+    @JoinColumn(name="address_id")
+    private Address address;
 
     @Enumerated(EnumType.STRING)
     private Authority authority;
 
-    @CreationTimestamp
-    private Date isCreated;
+    private String gender;
 
     @Builder
-    public Member(String username, String password, String nickname, String phone, Date birthday,
-                  String email, String gender, String department, String position, Authority authority){
-        this.username = username;
+    public Member(String password, Date birthday, String gender,Authority authority,Address address){
         this.password = password;
-        this.nickname = nickname;
-        this.phone = phone;
         this.birthday = birthday;
-        this.email = email;
         this.gender = gender;
-        this.department = department;
-        this.position = position;
         this.authority = Authority.ROLE_BEFORE;
+        this.address = address;
+    }
+
+    public void update(Address address) {
+        this.address = address;
     }
 }

@@ -31,8 +31,8 @@ public class CommentService {
         String writerName = null;
         List<Member> members = membersRepository.findAllDesc();
         for(Member iter: members) {
-            if(iter.getUsername().equals(requestDto.getWriter())) {
-                writerName = iter.getNickname();
+            if(iter.getAddress().getUsername().equals(requestDto.getWriter())) {
+                writerName = iter.getAddress().getNickname();
                 break;
             }
         }

@@ -11,7 +11,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/admin")
+@RequestMapping("/api/admin/board")
 public class AdminApiController {
     private final AdminService adminService;
 
@@ -21,7 +21,7 @@ public class AdminApiController {
         return adminService.update(bid,requestDto);
     }
     //create a board
-    @PostMapping("/board")
+    @PostMapping("/")
     public Long save(@RequestBody BoardSaveRequestDto requestDto) {
         return adminService.save(requestDto);
     }
