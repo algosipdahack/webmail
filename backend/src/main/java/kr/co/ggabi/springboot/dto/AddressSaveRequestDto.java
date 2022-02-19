@@ -3,6 +3,9 @@ package kr.co.ggabi.springboot.dto;
 import kr.co.ggabi.springboot.domain.users.Address;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Setter
 @Getter
 @NoArgsConstructor
 public class AddressSaveRequestDto {
@@ -35,6 +38,7 @@ public class AddressSaveRequestDto {
                 .department(department)
                 .position(position)
                 .company(company)
+                .parentId(parentId)
                 .build();
     }
 }

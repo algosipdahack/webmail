@@ -45,7 +45,7 @@ import java.util.Date;
 
         @Builder
         public Address(String nickname, String username,String phone,
-                      String email, String department, String position,String company){
+                      String email, String department, String position,String company,Long parentId){
             this.nickname = nickname;
             this.phone = phone;
             this.email = email;
@@ -53,5 +53,23 @@ import java.util.Date;
             this.position = position;
             this.username = username;
             this.company = company;
+            this.parentId = parentId;
+        }
+        public void update(String username, String nickname, String phone,
+        String email, String department, String position, String company){
+            this.username = username;
+            this.nickname = nickname;
+            this.phone = phone;
+            this.email = email;
+            this.department = department;
+            this.position = position;
+            this.company = company;
+        }
+        public void update_depart(String department) {
+            this.department = department;
+        }
+
+        public void update_position(String position) {
+            this.position = position;
         }
     }

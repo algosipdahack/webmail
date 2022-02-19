@@ -1,20 +1,14 @@
 package kr.co.ggabi.springboot.service;
 
 import kr.co.ggabi.springboot.domain.board.Board;
-import kr.co.ggabi.springboot.dto.BoardSaveRequestDto;
-import kr.co.ggabi.springboot.repository.BoardRepository;
+import kr.co.ggabi.springboot.domain.users.Address;
+import kr.co.ggabi.springboot.dto.*;
+import kr.co.ggabi.springboot.repository.*;
 import kr.co.ggabi.springboot.domain.comments.Comment;
-import kr.co.ggabi.springboot.repository.CommentRepository;
 import kr.co.ggabi.springboot.domain.posts.Post;
 import kr.co.ggabi.springboot.domain.posts.PostList;
-import kr.co.ggabi.springboot.repository.PostListRepository;
-import kr.co.ggabi.springboot.repository.PostRepository;
 import kr.co.ggabi.springboot.domain.users.Authority;
 import kr.co.ggabi.springboot.domain.users.Member;
-import kr.co.ggabi.springboot.dto.BoardUpdateRequestDto;
-import kr.co.ggabi.springboot.dto.MemberResponseDto;
-import kr.co.ggabi.springboot.dto.UserAuthorityDto;
-import kr.co.ggabi.springboot.repository.MembersRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +18,7 @@ import java.util.*;
 @Service
 @RequiredArgsConstructor
 public class AdminService {
+    private final AddressRepository addressRepository;
     private final MembersRepository membersRepository;
     private final BoardRepository boardRepository;
     private final PostListRepository postListRepository;
@@ -64,12 +59,12 @@ public class AdminService {
     }
 
     @Transactional
-    public Long save(BoardSaveRequestDto requestDto) {
+    public Long save_board(BoardSaveRequestDto requestDto) {
         return boardRepository.save(requestDto.toEntity()).getId();
     }
 
     @Transactional
-    public Long update(Long id, BoardUpdateRequestDto requestDto) {
+    public Long update_board(Long id, BoardUpdateRequestDto requestDto) {
         Board board = boardRepository.findById(id).orElseThrow(()->new IllegalArgumentException("해당 게시판이 없습니다. id="+id));
         board.update(requestDto.getTitle());
         return board.getId();
@@ -133,5 +128,30 @@ public class AdminService {
         postListRepository.delete(postlist);
         //post지우기
         postRepository.delete(post);
+    }
+
+    //member에서 변경 -> fixed이므로
+    @Transactional
+    public Long update_depart(Long id, String depart) {
+        Member member = membersRepository.findById(id).orElseThrow(()->new IllegalArgumentException("해당 멤버가 없습니다. id="+id));
+        Address address = member.getAddress();
+        address.update_depart(depart);
+        member.update(address);
+        return member.getId();
+    }
+
+    @Transactional
+    public Long update_position(Long id, String position) {
+        Member member = membersRepository.findById(id).orElseThrow(()->new IllegalArgumentException("해당 멤버가 없습니다. id="+id));
+        Address address = member.getAddress();
+        address.update_position(position);
+        member.update(address);
+        return member.getId();
+    }
+
+    @Transactional
+    public void delete_address(Long id) {
+        Address address = addressRepository.findById(id).orElseThrow(()->new IllegalArgumentException("해당 주소록이 없습니다. id="+id));
+        addressRepository.delete(address);
     }
 }

@@ -19,12 +19,13 @@ public class UserService {
     @Value("${mailServer.domain}")
     String domain;
 
-    public String delete(String username){
+    public String delete(Long mid){
         try{
-            Runtime.getRuntime().exec(dir + " RemoveUser " + username + "@" + domain);
-            Runtime.getRuntime().exec(dir + " DeleteUserMailboxes " + username + "@" + domain);
-            Address address = addressRepository.findByUsername(username).get();
-            Member member = membersRepository.findByAddress(address).get();
+            Member member = membersRepository.findById(mid).orElseThrow(()->new IllegalArgumentException("해당 멤버가 없습니다. id="+mid));
+            Address address = member.getAddress();
+            Runtime.getRuntime().exec(dir + " RemoveUser " + address.getUsername() + "@" + domain);
+            Runtime.getRuntime().exec(dir + " DeleteUserMailboxes " + address.getUsername() + "@" + domain);
+            addressRepository.delete(address);
             membersRepository.delete(member);
             return "success";
         } catch (Exception e){
