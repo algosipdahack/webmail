@@ -16,7 +16,7 @@ public class AddressUpdateRequestDto {
     private String company;
 
     @Builder
-    public AddressUpdateRequestDto(    String username, String nickname, String phone,
+    public AddressUpdateRequestDto( String username, String nickname, String phone,
                                        String email, String department, String position, String company) {
         this.username = username;
         this.nickname = nickname;

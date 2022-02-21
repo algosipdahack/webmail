@@ -27,6 +27,7 @@ public class AddressSaveRequestDto {
         this.department = department;
         this.position = position;
         this.company = company;
+        this.parentId = null;
     }
 
     public Address toEntity(){

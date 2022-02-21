@@ -37,7 +37,7 @@ public class UserController {
         res.put("auth", tokenProvider.getAuthFromToken(token));
         return res;
     }
-
+    //for fixed address
     //체크박스 부서이동
     @PutMapping("/department")
     public void update_depart(@RequestParam("mid") List<String> mid, @RequestParam("department") String department) {
