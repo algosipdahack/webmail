@@ -1,55 +1,59 @@
 package kr.co.ggabi.springboot.dto;
 
 
+import kr.co.ggabi.springboot.domain.users.Address;
 import kr.co.ggabi.springboot.domain.users.Authority;
 import kr.co.ggabi.springboot.domain.users.Member;
+import kr.co.ggabi.springboot.repository.AddressRepository;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
+import lombok.Setter;
 import java.util.Date;
 
+import static kr.co.ggabi.springboot.domain.users.Authority.ROLE_ADMIN;
+
+@Setter
 @Getter
 @NoArgsConstructor
 public class MembersSaveRequestDto {
-    private String username;
+
     private String password;
+    private Date birthday;
+    private Authority authority;
+    private String gender;
+    private Address address;
+    private String username;
     private String nickname;
     private String phone;
-    private Date birthday;
     private String email;
-    private String gender;
     private String department;
     private String position;
-    private Authority authority;
-
+    private String company;
     @Builder
-    public MembersSaveRequestDto(String username, String password, String nickname, String phone, Date birthday,
-                                 String email, String gender, String department, String position, Authority authority){
-        this.username = username;
-        this.password = password;
+    public MembersSaveRequestDto(String username, String nickname, String phone,
+                                 String email, String department, String position, String company,String password, Date birthday, String gender, Authority authority){
+        this.username=username;
         this.nickname = nickname;
         this.phone = phone;
-        this.birthday = birthday;
         this.email = email;
-        this.gender = gender;
         this.department = department;
         this.position = position;
-        this.authority = authority;
+        this.company = company;
+        this.password = password;
+        this.birthday = birthday;
+        this.gender = gender;
+        this.authority = ROLE_ADMIN;
     }
 
     public Member toEntity(){
         return Member.builder()
-                .username(username)
                 .password("{noop}" + password)
-                .nickname(nickname)
-                .phone(phone)
                 .birthday(birthday)
-                .email(email)
                 .gender(gender)
-                .department(department)
-                .position(position)
                 .authority(authority)
+                .address(address)
+                .username(username)
                 .build();
     }
 }

@@ -21,15 +21,6 @@ public class UserController {
     private final TokenProvider tokenProvider;
     private final UserService userService;
 
-    @DeleteMapping("")
-    public Map<String, String> delete(HttpServletRequest httpServletRequest){
-        String token = tokenProvider.resolveToken(httpServletRequest);
-        Map<String, String> res = new HashMap<>();
-        String username = tokenProvider.getUsernameFromToken(token);
-        res.put("status", userService.delete(username));
-
-        return res;
-    }
 
     @GetMapping("/status")
     public Map<String, String> status(HttpServletRequest httpServletRequest, StatusDto statusDto){
