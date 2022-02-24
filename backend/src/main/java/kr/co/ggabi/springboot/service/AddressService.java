@@ -35,7 +35,7 @@ public class AddressService {
     @Transactional
     public Long update(String username, AddressUpdateRequestDto requestDto) {
         Address address = addressRepository.findById(requestDto.getId()).orElseThrow(()->new IllegalArgumentException("해당 주소록이 없습니다. id="+requestDto.getId()));
-        address.update(requestDto.getUsername(),requestDto.getNickname(),requestDto.getPhone(),requestDto.getEmail(),requestDto.getDepartment(),requestDto.getPosition(),requestDto.getCompany());
+        address.update(requestDto.getNickname(),requestDto.getPhone(),requestDto.getEmail(),requestDto.getDepartment(),requestDto.getPosition(),requestDto.getCompany());
         return address.getId();
     }
 
@@ -46,7 +46,7 @@ public class AddressService {
     }
     @Transactional(readOnly = true) // 조회기능
     public List<AddressResponseDto>  findAllDesc(String username) {
-        Long parentId = addressRepository.findByUsername(username).orElseThrow(()->new IllegalArgumentException("해당 주소록이 없습니다. username="+username)).getId();
+        Long parentId = membersRepository.findByUsername(username).orElseThrow(()->new IllegalArgumentException("해당 주소록이 없습니다. username="+username)).getId();
         return addressRepository.findAllDesc(parentId).stream()
                 .map(AddressResponseDto::new)// == .map(Board->new BoardListResponseDto(board))
                 .collect(Collectors.toList());

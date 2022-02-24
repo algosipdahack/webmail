@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class AddressUpdateRequestDto {
-    private String username;
     private String nickname;
     private String phone;
     private String email;
@@ -18,11 +17,10 @@ public class AddressUpdateRequestDto {
     private String writer;
 
     @Builder
-    public AddressUpdateRequestDto(String writer, Long id, String username, String nickname, String phone,
+    public AddressUpdateRequestDto(String writer, Long id,String nickname, String phone,
                                    String email, String department, String position, String company) {
         this.id = id;
         this.writer = writer;
-        this.username = username;
         this.nickname = nickname;
         this.phone = phone;
         this.email = email;

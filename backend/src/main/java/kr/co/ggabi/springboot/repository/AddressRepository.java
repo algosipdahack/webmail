@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface AddressRepository extends JpaRepository<Address, Long> {
-    Optional<Address> findByUsername(String username);
     Optional<Address> findByPhone(String phone);
     Optional<Address> findByNickname(String nickname);
 

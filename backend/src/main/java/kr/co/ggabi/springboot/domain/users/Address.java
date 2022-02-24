@@ -18,13 +18,11 @@ import java.util.Date;
 public class Address {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name="address")
     private Long id;
 
-    @Column(nullable=false, unique=true)
-    private String username;
-
-    @Column(nullable=false, unique=true)
-    private String nickname;
+    @Column(nullable=false)
+    private String nickname;//실명
 
     @Column(nullable=false, unique=true)
     private String phone;
@@ -43,20 +41,18 @@ public class Address {
     private Date isCreated;
 
     @Builder
-    public Address(String nickname, String username,String phone,
+    public Address(String nickname, String phone,
                    String email, String department, String position,String company,Long parentId){
         this.nickname = nickname;
         this.phone = phone;
         this.email = email;
         this.department = department;
         this.position = position;
-        this.username = username;
         this.company = company;
         this.parentId = parentId;
     }
-    public void update(String username, String nickname, String phone,
+    public void update(String nickname, String phone,
                        String email, String department, String position, String company){
-        this.username = username;
         this.nickname = nickname;
         this.phone = phone;
         this.email = email;

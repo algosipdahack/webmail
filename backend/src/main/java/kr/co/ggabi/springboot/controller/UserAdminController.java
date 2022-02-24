@@ -21,6 +21,7 @@ public class UserAdminController {
     private final TokenProvider tokenProvider;
     private final UserService userService;
     private final AdminService adminService;
+
     //fixed 유저 삭제
     @PostMapping("")
     public void delete(@RequestParam("mid") List<String> mid){

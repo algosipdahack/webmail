@@ -28,17 +28,15 @@ public class CreateMemberService {
 
     @Transactional
     public MembersSaveResponseDto save(MembersSaveRequestDto membersSaveRequestDto) throws IOException {
-        AddressSaveRequestDto addressSaveRequestDto = new AddressSaveRequestDto(membersSaveRequestDto.getUsername(),membersSaveRequestDto.getUsername(),membersSaveRequestDto.getNickname(),membersSaveRequestDto.getPhone(),membersSaveRequestDto.getEmail(),membersSaveRequestDto.getDepartment(),membersSaveRequestDto.getPosition(),membersSaveRequestDto.getCompany());
-        String username = addressSaveRequestDto.toEntity().getUsername();
+        AddressSaveRequestDto addressSaveRequestDto = new AddressSaveRequestDto(membersSaveRequestDto.getUsername(),membersSaveRequestDto.getNickname(),membersSaveRequestDto.getPhone(),membersSaveRequestDto.getEmail(),membersSaveRequestDto.getDepartment(),membersSaveRequestDto.getPosition(),membersSaveRequestDto.getCompany());
+        String username = membersSaveRequestDto.toEntity().getUsername();
         String password = membersSaveRequestDto.toEntity().getPassword();
         System.out.println(dir + " AddUser " + username + "@" + domain + " " + password.substring(6));
         Process process = Runtime.getRuntime().exec(dir + " AddUser " + username + "@" + domain + " " + password.substring(6));
         MembersSaveResponseDto res = new MembersSaveResponseDto("fail", "error");
         System.out.println(username);
-        if(addressRepository.findByUsername(username).isPresent()){
+        if(membersRepository.findByUsername(username).isPresent()){
             res.setMessage("중복 ID입니다.");
-        } else if (addressRepository.findByNickname( addressSaveRequestDto.toEntity().getNickname()).isPresent()){
-            res.setMessage("중복 닉네임입니다.");
         } else if (addressRepository.findByPhone( addressSaveRequestDto.toEntity().getPhone()).isPresent()){
             res.setMessage("중복 전화번호입니다.");
         } else {

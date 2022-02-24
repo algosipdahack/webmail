@@ -10,7 +10,6 @@ import lombok.Setter;
 @Getter
 @NoArgsConstructor
 public class AddressSaveRequestDto {
-    private String username;
     private String nickname;
     private String phone;
     private String email;
@@ -20,10 +19,9 @@ public class AddressSaveRequestDto {
     private String company;
     private String writer;
     @Builder
-    public AddressSaveRequestDto(String writer, String username, String nickname, String phone,
+    public AddressSaveRequestDto(String writer, String nickname, String phone,
                                  String email, String department, String position, String company){
         this.writer = writer;
-        this.username = username;
         this.nickname = nickname;
         this.phone = phone;
         this.email = email;
@@ -34,7 +32,6 @@ public class AddressSaveRequestDto {
 
     public Address toEntity(){
         return Address.builder()
-                .username(username)
                 .nickname(nickname)
                 .phone(phone)
                 .email(email)

@@ -135,8 +135,8 @@ public class AdminService {
     //member에서 변경 -> fixed이므로
     @Transactional
     public Long update_depart(Long id, String depart) {
-        Member member = membersRepository.findById(id).orElseThrow(()->new IllegalArgumentException("해당 멤버가 없습니다. id="+id));
-        Address address = member.getAddress();
+        Address address = addressRepository.findById(id).orElseThrow(()->new IllegalArgumentException("해당 주소록이 없습니다. id="+id));
+        Member member = membersRepository.findByAddress(address).orElseThrow(()->new IllegalArgumentException("해당 멤버가 없습니다. address="+address));
         address.update_depart(depart);
         member.update(address);
         return member.getId();
@@ -144,8 +144,8 @@ public class AdminService {
 
     @Transactional
     public Long update_position(Long id, String position) {
-        Member member = membersRepository.findById(id).orElseThrow(()->new IllegalArgumentException("해당 멤버가 없습니다. id="+id));
-        Address address = member.getAddress();
+        Address address = addressRepository.findById(id).orElseThrow(()->new IllegalArgumentException("해당 주소록이 없습니다. id="+id));
+        Member member = membersRepository.findByAddress(address).orElseThrow(()->new IllegalArgumentException("해당 멤버가 없습니다. address="+address));
         address.update_position(position);
         member.update(address);
         return member.getId();
