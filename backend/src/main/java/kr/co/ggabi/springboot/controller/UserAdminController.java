@@ -1,3 +1,4 @@
+
 package kr.co.ggabi.springboot.controller;
 
 import kr.co.ggabi.springboot.dto.StatusDto;
@@ -15,18 +16,21 @@ import java.util.Map;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/admin/user")
-public class UserController {
+public class UserAdminController {
 
     private final TokenProvider tokenProvider;
     private final UserService userService;
-    @GetMapping("/status")
-    public Map<String, String> status(HttpServletRequest httpServletRequest, StatusDto statusDto){
-        String token = tokenProvider.resolveToken(httpServletRequest);
-        Map<String, String> res = new HashMap<>();
-        res.put("username", tokenProvider.getUsernameFromToken(token));
-        res.put("auth", tokenProvider.getAuthFromToken(token));
-        return res;
+    private final AdminService adminService;
+
+    //fixed 유저 삭제
+    @PostMapping("")
+    public void delete(@RequestParam("mid") List<String> mid){
+        for (String id : mid) {
+            Long lid = Long.parseLong(id);
+            userService.delete(lid);
+        }
     }
+
     //for fixed address
     //체크박스 부서이동
     @PutMapping("/department")

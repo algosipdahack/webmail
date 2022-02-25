@@ -21,12 +21,12 @@ public class UserService {
 
     public String delete(Long mid){
         try{
-            Member member = membersRepository.findById(mid).orElseThrow(()->new IllegalArgumentException("해당 멤버가 없습니다. id="+mid));
-            Address address = member.getAddress();
-            Runtime.getRuntime().exec(dir + " RemoveUser " + address.getUsername() + "@" + domain);
-            Runtime.getRuntime().exec(dir + " DeleteUserMailboxes " + address.getUsername() + "@" + domain);
-            addressRepository.delete(address);
+            Address address = addressRepository.findById(mid).orElseThrow(()->new IllegalArgumentException("해당 주소록이 없습니다. id="+mid));
+            Member member = membersRepository.findByAddress(address).orElseThrow(()->new IllegalArgumentException("해당 멤버가 없습니다. address="+address));
+            Runtime.getRuntime().exec(dir + " RemoveUser " + member.getUsername() + "@" + domain);
+            Runtime.getRuntime().exec(dir + " DeleteUserMailboxes " + member.getUsername() + "@" + domain);
             membersRepository.delete(member);
+            addressRepository.delete(address);
             return "success";
         } catch (Exception e){
             return "fail";

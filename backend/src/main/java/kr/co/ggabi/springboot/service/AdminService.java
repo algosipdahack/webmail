@@ -2,13 +2,16 @@ package kr.co.ggabi.springboot.service;
 
 import kr.co.ggabi.springboot.domain.board.Board;
 import kr.co.ggabi.springboot.domain.users.Address;
-import kr.co.ggabi.springboot.dto.*;
+import kr.co.ggabi.springboot.dto.BoardSaveRequestDto;
 import kr.co.ggabi.springboot.repository.*;
 import kr.co.ggabi.springboot.domain.comments.Comment;
 import kr.co.ggabi.springboot.domain.posts.Post;
 import kr.co.ggabi.springboot.domain.posts.PostList;
 import kr.co.ggabi.springboot.domain.users.Authority;
 import kr.co.ggabi.springboot.domain.users.Member;
+import kr.co.ggabi.springboot.dto.BoardUpdateRequestDto;
+import kr.co.ggabi.springboot.dto.MemberResponseDto;
+import kr.co.ggabi.springboot.dto.UserAuthorityDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -129,12 +132,11 @@ public class AdminService {
         //post지우기
         postRepository.delete(post);
     }
-
     //member에서 변경 -> fixed이므로
     @Transactional
     public Long update_depart(Long id, String depart) {
-        Member member = membersRepository.findById(id).orElseThrow(()->new IllegalArgumentException("해당 멤버가 없습니다. id="+id));
-        Address address = member.getAddress();
+        Address address = addressRepository.findById(id).orElseThrow(()->new IllegalArgumentException("해당 주소록이 없습니다. id="+id));
+        Member member = membersRepository.findByAddress(address).orElseThrow(()->new IllegalArgumentException("해당 멤버가 없습니다. address="+address));
         address.update_depart(depart);
         member.update(address);
         return member.getId();
@@ -142,8 +144,8 @@ public class AdminService {
 
     @Transactional
     public Long update_position(Long id, String position) {
-        Member member = membersRepository.findById(id).orElseThrow(()->new IllegalArgumentException("해당 멤버가 없습니다. id="+id));
-        Address address = member.getAddress();
+        Address address = addressRepository.findById(id).orElseThrow(()->new IllegalArgumentException("해당 주소록이 없습니다. id="+id));
+        Member member = membersRepository.findByAddress(address).orElseThrow(()->new IllegalArgumentException("해당 멤버가 없습니다. address="+address));
         address.update_position(position);
         member.update(address);
         return member.getId();

@@ -26,7 +26,7 @@ public class PostListService {
         String writerName = null;
         List<Member> members = membersRepository.findAllDesc();
         for(Member iter: members) {
-            if(iter.getAddress().getUsername().equals(requestDto.getWriter())) {
+            if(iter.getUsername().equals(requestDto.getWriter())) {
                 writerName = iter.getAddress().getNickname();
                 break;
             }

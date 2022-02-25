@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Service
 public class MemberService {
-    MembersRepository membersRepository;
+    private final MembersRepository membersRepository;
     @Transactional(readOnly = true) // 조회기능
     public List<MemberResponseDto>   findAllDesc() {
         return membersRepository.findAllDesc().stream()

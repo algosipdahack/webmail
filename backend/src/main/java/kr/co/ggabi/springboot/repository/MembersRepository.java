@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface MembersRepository extends JpaRepository<Member, Long> {
+    Optional<Member> findByUsername(String username);
     Optional<Member> findByAddress(Address address);
     @EntityGraph(attributePaths = "authority")
     Optional<Member> findOneWithAuthorityByPassword(String password);
@@ -19,4 +20,6 @@ public interface MembersRepository extends JpaRepository<Member, Long> {
 
     @Query("SELECT p FROM Member p ORDER BY p.id DESC")
     List<Member> findAllDesc();
+
+
 }

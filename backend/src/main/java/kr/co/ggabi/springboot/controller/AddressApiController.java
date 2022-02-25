@@ -6,8 +6,6 @@ import kr.co.ggabi.springboot.service.AddressService;
 import kr.co.ggabi.springboot.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -15,38 +13,37 @@ import java.util.List;
 @RequestMapping("/api/address")
 public class AddressApiController {
     private final AddressService addressService;
+    private final MemberService memberService;
     private final TokenProvider tokenProvider;
 
     //show fixed address(member information)
     @GetMapping("/fixed")
-    public List<AddressResponseDto> show(){
-        return addressService.findAllMember();
+    public List<MemberResponseDto> show(){
+        return memberService.findAllDesc();
     }
+
     // return all personal address information(address 보여주기)
     @GetMapping("/personal")
-    public List<AddressResponseDto> findAll (HttpServletRequest httpServletRequest){
+    public List<AddressResponseDto> findAll (@RequestParam("writer") String writer){
         //personal 이므로 parentId가 해당 username을 가진 personal정보만 보여줘야 함
-        String token = tokenProvider.resolveToken(httpServletRequest);
-        String username = tokenProvider.getUsernameFromToken(token);
+        String username = writer;
 
         return addressService.findAllDesc(username);
     }
 
     //create a personal address
     @PostMapping("/personal")
-    public Long save(HttpServletRequest httpServletRequest, @RequestBody AddressSaveRequestDto requestDto) {
+    public Long save(@RequestBody AddressSaveRequestDto requestDto) {
         //personal 이므로
-        String token = tokenProvider.resolveToken(httpServletRequest);
-        String username = tokenProvider.getUsernameFromToken(token);
-
+        String username = requestDto.getWriter();
+        System.out.println(username);
         return addressService.save(username,requestDto);
     }
 
     //modify personal address
     @PutMapping("/personal")
-    public Long update(HttpServletRequest httpServletRequest,@RequestBody AddressUpdateRequestDto requestDto) {
-        String token = tokenProvider.resolveToken(httpServletRequest);
-        String username = tokenProvider.getUsernameFromToken(token);
+    public Long update(@RequestBody AddressUpdateRequestDto requestDto) {
+        String username = requestDto.getWriter();
         return addressService.update(username,requestDto);
     }
 
