@@ -48,7 +48,7 @@ public class Member {
         this.password = password;
         this.birthday = birthday;
         this.gender = gender;
-        this.authority = Authority.ROLE_ADMIN;
+        this.authority = Authority.ROLE_BEFORE;
         this.address = address;
     }
 

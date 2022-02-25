@@ -12,6 +12,7 @@ import lombok.Setter;
 import java.util.Date;
 
 import static kr.co.ggabi.springboot.domain.users.Authority.ROLE_ADMIN;
+import static kr.co.ggabi.springboot.domain.users.Authority.ROLE_BEFORE;
 
 @Setter
 @Getter
@@ -43,7 +44,7 @@ public class MembersSaveRequestDto {
         this.password = password;
         this.birthday = birthday;
         this.gender = gender;
-        this.authority = ROLE_ADMIN;
+        this.authority = ROLE_BEFORE;
     }
 
     public Member toEntity(){
