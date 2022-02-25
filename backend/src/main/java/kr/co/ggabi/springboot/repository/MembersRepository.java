@@ -20,4 +20,6 @@ public interface MembersRepository extends JpaRepository<Member, Long> {
 
     @Query("SELECT p FROM Member p ORDER BY p.id DESC")
     List<Member> findAllDesc();
+
+
 }

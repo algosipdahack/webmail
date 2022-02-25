@@ -13,12 +13,13 @@ import java.util.List;
 @RequestMapping("/api/address")
 public class AddressApiController {
     private final AddressService addressService;
+    private final MemberService memberService;
     private final TokenProvider tokenProvider;
 
     //show fixed address(member information)
     @GetMapping("/fixed")
-    public List<AddressResponseDto> show(){
-        return addressService.findAllMember();
+    public List<MemberResponseDto> show(){
+        return memberService.findAllDesc();
     }
 
     // return all personal address information(address 보여주기)

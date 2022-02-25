@@ -1,6 +1,7 @@
 package kr.co.ggabi.springboot.domain.users;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -33,6 +34,7 @@ public class Member {
 
     @OneToOne(fetch = FetchType.LAZY) // 사용시점에 조회가 됨
     @JoinColumn(name="address_id")
+    @JsonIgnoreProperties({"hibernateLazyInitializer"})
     private Address address;
 
     @Enumerated(EnumType.STRING)
