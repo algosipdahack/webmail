@@ -1,7 +1,9 @@
 package kr.co.ggabi.springboot.service;
 
+import kr.co.ggabi.springboot.domain.users.Address;
 import kr.co.ggabi.springboot.domain.users.Member;
 import kr.co.ggabi.springboot.jwt.TokenProvider;
+import kr.co.ggabi.springboot.repository.AddressRepository;
 import kr.co.ggabi.springboot.repository.MembersRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
@@ -18,9 +20,11 @@ import java.nio.file.Paths;
 public class FileDownloadService {
 
     private final MembersRepository membersRepository;
+    private final AddressRepository addressRepository;
 
     public Resource loadFileAsResource(String username, int idx, String filename, String mailBox){
-        Member member = membersRepository.findByUsername(username).get();
+        Address address = addressRepository.findByUsername(username).get();
+        Member member = membersRepository.findByAddress(address).get();
         System.out.println(filename);
         long uid = member.getId();
         try{

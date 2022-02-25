@@ -2,8 +2,10 @@ package kr.co.ggabi.springboot.service;
 
 import kr.co.ggabi.springboot.domain.mail.WebMail;
 import kr.co.ggabi.springboot.domain.params.MailParam;
+import kr.co.ggabi.springboot.domain.users.Address;
 import kr.co.ggabi.springboot.domain.users.Member;
 import kr.co.ggabi.springboot.jwt.TokenProvider;
+import kr.co.ggabi.springboot.repository.AddressRepository;
 import kr.co.ggabi.springboot.repository.MembersRepository;
 import kr.co.ggabi.springboot.repository.WebMailRepository;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +28,7 @@ import java.util.*;
 public class SendSmtpMailService {
 
     private final MembersRepository membersRepository;
+    private final AddressRepository addressRepository;
     private final WebMailRepository webMailRepository;
     private final TokenProvider tokenProvider;
 
@@ -53,7 +56,8 @@ public class SendSmtpMailService {
         Properties props = new Properties();
         String token = tokenProvider.resolveToken(request);
         String username = tokenProvider.getUsernameFromToken(token);
-        Member member = membersRepository.findByUsername(username).get();
+        Address address = addressRepository.findByUsername(username).get();
+        Member member = membersRepository.findByAddress(address).get();
         String password = member.getPassword().substring(6);
 
         // 웹메일 저장

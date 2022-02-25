@@ -1,29 +1,27 @@
 package kr.co.ggabi.springboot.controller;
-import kr.co.ggabi.springboot.domain.board.Board;
 import kr.co.ggabi.springboot.dto.BoardSaveRequestDto;
 import kr.co.ggabi.springboot.dto.BoardUpdateRequestDto;
 import kr.co.ggabi.springboot.service.AdminService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/admin")
-public class AdminApiController {
+@RequestMapping("/api/admin/board")
+public class AdminBoardApiController {
     private final AdminService adminService;
 
     //modify board
     @PutMapping("/{bid}")
     public Long update(@PathVariable("bid") Long bid, @RequestBody BoardUpdateRequestDto requestDto) {
-        return adminService.update(bid,requestDto);
+        return adminService.update_board(bid,requestDto);
     }
     //create a board
-    @PostMapping("/board")
+    @PostMapping("/")
     public Long save(@RequestBody BoardSaveRequestDto requestDto) {
-        return adminService.save(requestDto);
+        return adminService.save_board(requestDto);
     }
     
     //remove board

@@ -8,6 +8,7 @@ import javax.persistence.Column;
 import java.util.Date;
 
 public class MemberResponseDto {
+
     public Long id;
     public String nickname;
     public String phone;

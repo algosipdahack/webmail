@@ -15,7 +15,7 @@ public interface MembersRepository extends JpaRepository<Member, Long> {
     Optional<Member> findByUsername(String username);
     Optional<Member> findByAddress(Address address);
     @EntityGraph(attributePaths = "authority")
-    Optional<Member> findOneWithAuthorityByUsername(String username);
+    Optional<Member> findOneWithAuthorityByPassword(String password);
     List<Member> findAllByAuthority(Authority authority);
 
     @Query("SELECT p FROM Member p ORDER BY p.id DESC")

@@ -13,7 +13,6 @@ import java.util.Date;
 
 import static kr.co.ggabi.springboot.domain.users.Authority.ROLE_ADMIN;
 import static kr.co.ggabi.springboot.domain.users.Authority.ROLE_BEFORE;
-
 @Setter
 @Getter
 @NoArgsConstructor
