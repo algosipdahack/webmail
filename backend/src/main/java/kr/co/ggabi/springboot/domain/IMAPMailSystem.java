@@ -1,14 +1,17 @@
 package kr.co.ggabi.springboot.domain;
 
+import kr.co.ggabi.springboot.domain.mail.ApprovalCheckMember;
 import kr.co.ggabi.springboot.domain.mail.ReceivedWebMail;
+import kr.co.ggabi.springboot.domain.mail.WebMail;
 import kr.co.ggabi.springboot.domain.users.Member;
 import kr.co.ggabi.springboot.dto.AttachmentResponseDto;
 import kr.co.ggabi.springboot.dto.MailResponseDto;
 import kr.co.ggabi.springboot.dto.MailboxResponseDto;
 import kr.co.ggabi.springboot.jwt.TokenProvider;
-import kr.co.ggabi.springboot.repository.AddressRepository;
+import kr.co.ggabi.springboot.repository.ApprovalCheckMemberRepository;
 import kr.co.ggabi.springboot.repository.MembersRepository;
 import kr.co.ggabi.springboot.repository.ReceivedWebMailRepository;
+import kr.co.ggabi.springboot.repository.WebMailRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -21,6 +24,7 @@ import javax.mail.internet.MimeUtility;
 import javax.mail.search.FlagTerm;
 import javax.mail.search.MessageNumberTerm;
 import javax.mail.search.SearchTerm;
+import javax.swing.text.html.Option;
 import java.io.*;
 import java.net.URLEncoder;
 import java.util.*;
@@ -31,8 +35,9 @@ public class IMAPMailSystem {
 
     private final TokenProvider tokenProvider;
     private final MembersRepository membersRepository;
-    private final AddressRepository addressRepository;
     private final ReceivedWebMailRepository receivedWebMailRepository;
+    private final WebMailRepository webMailRepository;
+    private final ApprovalCheckMemberRepository approvalCheckMemberRepository;
 
     private Session session;
     private Store store;
@@ -109,7 +114,7 @@ public class IMAPMailSystem {
         folder.setFlags(unreadMessages, seenFlag, false);
 
 
-        String username = membersRepository.findById(id).orElseThrow(()->new IllegalArgumentException("해당 멤버가 없습니다. id="+id)).getAddress().getUsername();
+        String username = membersRepository.findById(id).get().getUsername();
 
         for (Message m : unreadMessages) {
             MailboxResponseDto mailboxResponseDto = new MailboxResponseDto();
@@ -247,7 +252,30 @@ public class IMAPMailSystem {
             res.content = (String) content;
             res.file = new HashMap<>();
         }
-        String username = membersRepository.findById(uid).orElseThrow(()->new IllegalArgumentException("해당 멤버가 없습니다. id="+uid)).getAddress().getUsername();
+
+        /* webmail 접속해서 approval 확인 */
+        /* approval 접속해서 approval member 갖고오기 */
+        if(mailBox.equals("SENT")){
+            WebMail webmail = webMailRepository.findBySenderAndDateAndIsReceivedTrue(res.from, res.date);
+            List<String> member = new ArrayList<>();
+            res.haveToApproval = webmail.isHaveToApproval();
+
+            if(webmail.isHaveToApproval()){
+                List<ApprovalCheckMember> opt = new ArrayList<>();
+                opt = approvalCheckMemberRepository.findBySenderAndWebMailId(res.from, webmail.getMailId());
+                int size = opt.size();
+                if(size > 0){
+                    for(int i=0; i<size; i++){
+                        ApprovalCheckMember tmp = opt.get(i);
+                        member.add(tmp.getApprovalCheckMember());
+                    }
+                }
+            }
+            res.ApprovalCheckMember = member;
+        }
+
+
+        String username = membersRepository.findById(uid).get().getUsername();
         if (mailBox.equals("INBOX")) {
             int flagMax = 0;
             Optional<List<ReceivedWebMail>> optional = receivedWebMailRepository.findAllByUsernameAndMailId(username, (long) idx);
@@ -352,8 +380,7 @@ public class IMAPMailSystem {
 
     public long login(String host, String token, String mailbox) throws Exception {
         String username = tokenProvider.getUsernameFromToken(token);
-        kr.co.ggabi.springboot.domain.users.Address address = addressRepository.findByUsername(username).orElseThrow(()->new IllegalArgumentException("해당 멤버가 없습니다. username="+username));
-        Optional<Member> optional = membersRepository.findByAddress(address);
+        Optional<Member> optional = membersRepository.findByUsername(username);
         if(!optional.isPresent()) return -1;
         Member member = optional.get();
         String password = member.getPassword().substring(6);

@@ -16,4 +16,6 @@ public class MailResponseDto {
     public Map<String, AttachmentResponseDto> file;
     public int flag;
     public boolean dangerURL = false;
+    public boolean haveToApproval;
+    public List<String> ApprovalCheckMember;
 }

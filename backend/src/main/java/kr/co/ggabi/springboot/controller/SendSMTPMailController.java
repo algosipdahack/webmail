@@ -19,6 +19,8 @@ public class SendSMTPMailController {
 
     private final SendSmtpMailService smtpMailService;
 
+    // 주소록 및 메일 결재자 갖고와야함.
+
     @PostMapping("/api/mail/send")
     public Map<String, String> sendMail(HttpServletRequest request,
                                         @RequestParam("receiver") List<String> receiver,
@@ -26,7 +28,8 @@ public class SendSMTPMailController {
                                         @RequestParam("BCC") List<String> BCC,
                                         @RequestParam("contents") String contents,
                                         @RequestParam("subject") String subject,
-                                        @RequestParam("attachments") List<MultipartFile> attachments) {
+                                        @RequestParam("attachments") List<MultipartFile> attachments,
+                                        @RequestParam("approvalCheckMembers") List<String> approvalCheckMembers) {
 
         MailParam param = new MailParam();
         param.receiver = receiver;
@@ -35,7 +38,7 @@ public class SendSMTPMailController {
         param.BCC = BCC;
         param.subject = subject;
         param.attachments = attachments;
-        Map<String, String> res = this.smtpMailService.sendMail(request, param);
+        Map<String, String> res = this.smtpMailService.sendMail(request, param, approvalCheckMembers);
 
         return res;
     }

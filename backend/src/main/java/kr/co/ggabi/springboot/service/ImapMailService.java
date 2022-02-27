@@ -70,6 +70,8 @@ public class ImapMailService {
         long id = imapMailSystem.login(host, tokenProvider.resolveToken(httpServletRequest), mailBox);
         int msgCount = imapMailSystem.getMessageCount();
         MailResponseDto res = imapMailSystem.getEmailDetails(id, idx, mailBox, seen);
+
+
         try {
             imapMailSystem.logout(id);
         } catch (IllegalStateException e){

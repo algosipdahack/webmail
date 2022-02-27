@@ -1,10 +1,8 @@
 package kr.co.ggabi.springboot.controller;
 
-import kr.co.ggabi.springboot.dto.MailResponseDto;
-import kr.co.ggabi.springboot.dto.MailboxResponseDto;
-import kr.co.ggabi.springboot.dto.SetMailDto;
-import kr.co.ggabi.springboot.dto.TrashMailDto;
+import kr.co.ggabi.springboot.dto.*;
 import kr.co.ggabi.springboot.jwt.TokenProvider;
+import kr.co.ggabi.springboot.service.ApprovalMailService;
 import kr.co.ggabi.springboot.service.FileDownloadService;
 import kr.co.ggabi.springboot.service.ImapMailService;
 import lombok.RequiredArgsConstructor;
@@ -27,16 +25,35 @@ public class IMAPMailController {
     private final ImapMailService imapMailService;
     private final TokenProvider tokenProvider;
     private final FileDownloadService service;
+    private final ApprovalMailService approvalMailService;
 
     @GetMapping("/{mailBox}")
-    public Map<Integer, MailboxResponseDto> sendMail(HttpServletRequest httpServletRequest, @PathVariable("mailBox") String mailBox) throws Exception {
+    public Map<Integer, MailboxResponseDto> sendMail(HttpServletRequest httpServletRequest,
+                                                     @PathVariable("mailBox") String mailBox) throws Exception {
         return imapMailService.showMailbox(httpServletRequest, mailBox);
+    }
+
+    @GetMapping("/approval/{folder}")
+    public Map<Integer, MailboxResponseDto> sendApprovalMail(HttpServletRequest httpServletRequest,
+                                                             @PathVariable("folder") String folder) throws Exception{
+        return approvalMailService.showMailBox(httpServletRequest, folder);
     }
 
     @GetMapping("/{mailBox}/{idx}")
     public MailResponseDto showMail(HttpServletRequest httpServletRequest, @PathVariable("mailBox") String mailBox, @PathVariable("idx") int idx) throws Exception {
         return imapMailService.showMailDetails(httpServletRequest, idx, mailBox, true);
     }
+
+    @GetMapping("/approval/{folder}/{idx}")
+    public WebMailResponseDto showApprovalMail(HttpServletRequest httpServletRequest, @PathVariable("folder") String folder, @PathVariable("idx") int idx) throws Exception{
+        return approvalMailService.showMailDetails(httpServletRequest, folder, idx);
+    }
+
+    @GetMapping("/approval/change/{folder}/{idx}")
+    public Map<String, String> changeApprovalMail(HttpServletRequest httpServletRequest, @PathVariable("folder") String folder, @PathVariable("idx") int idx) throws Exception{
+        return approvalMailService.changeApprovalMail(httpServletRequest, folder, idx);
+    }
+
 
     @GetMapping("/download/{mailBox}/{idx}/{filename:.+}")
     public ResponseEntity<Resource> downloadFile(HttpServletRequest request, @PathVariable("mailBox") String mailBox, @PathVariable("idx") int idx, @PathVariable("filename") String filename) throws IOException {

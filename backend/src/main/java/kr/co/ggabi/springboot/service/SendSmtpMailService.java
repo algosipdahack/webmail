@@ -1,11 +1,11 @@
 package kr.co.ggabi.springboot.service;
 
+import kr.co.ggabi.springboot.domain.mail.ApprovalCheckMember;
 import kr.co.ggabi.springboot.domain.mail.WebMail;
 import kr.co.ggabi.springboot.domain.params.MailParam;
-import kr.co.ggabi.springboot.domain.users.Address;
 import kr.co.ggabi.springboot.domain.users.Member;
 import kr.co.ggabi.springboot.jwt.TokenProvider;
-import kr.co.ggabi.springboot.repository.AddressRepository;
+import kr.co.ggabi.springboot.repository.ApprovalCheckMemberRepository;
 import kr.co.ggabi.springboot.repository.MembersRepository;
 import kr.co.ggabi.springboot.repository.WebMailRepository;
 import lombok.RequiredArgsConstructor;
@@ -28,8 +28,8 @@ import java.util.*;
 public class SendSmtpMailService {
 
     private final MembersRepository membersRepository;
-    private final AddressRepository addressRepository;
     private final WebMailRepository webMailRepository;
+    private final ApprovalCheckMemberRepository approvalCheckMemberRepository;
     private final TokenProvider tokenProvider;
 
     public class SMTPAuthenticator extends Authenticator {
@@ -50,20 +50,82 @@ public class SendSmtpMailService {
     @Value("${mailServer.domain}")
     String domain;
 
-    public Map<String, String> sendMail(HttpServletRequest request, MailParam param) {
+    public Map<String, String> sendMail(HttpServletRequest request, MailParam param, List<String> approvalCheckMembers) {
 
         Map<String, String> res = new HashMap<>();
         Properties props = new Properties();
         String token = tokenProvider.resolveToken(request);
         String username = tokenProvider.getUsernameFromToken(token);
-        Address address = addressRepository.findByUsername(username).get();
-        Member member = membersRepository.findByAddress(address).get();
+        Member member = membersRepository.findByUsername(username).get();
         String password = member.getPassword().substring(6);
 
         // 웹메일 저장
-        //saveWebMail(param, username);
+        int inputMailId = saveWebMail(param, username, approvalCheckMembers);
 
-        try{
+        /* 메일 결재가 없을 때 서버로 전송 */
+        if(!webMailRepository.findByMailId(inputMailId).isHaveToApproval()) {
+            sendMailToMailServer(res, props, param, username, password);
+        }
+        /* 메일 결재재가 있을 때 서버로 전송 X (승인 요청중) */
+        else{
+            res.put("status", "on request");
+        }
+
+        return res;
+    }
+
+
+    public int saveWebMail(MailParam param, String username, List<String> approvalCheckMembers){
+
+        Optional<WebMail> entity = webMailRepository.findFirstBySenderOrderByIdDesc(username + "@" + domain);
+        int inputMailId = entity.map(webMail -> (webMail.getMailId()) + 1).orElse(0);
+
+        StringBuilder WebMailReceivers = new StringBuilder("");
+        StringBuilder WebMailFiles = new StringBuilder("");
+
+        // 결재자 저장
+        boolean haveToCheck = false;
+        if(!approvalCheckMembers.isEmpty()){
+            haveToCheck = true;
+            for(String checkMember : approvalCheckMembers){
+                approvalCheckMemberRepository.save(ApprovalCheckMember.builder()
+                        .webMailId(inputMailId)
+                        .approvalCheckMember(checkMember)
+                        .build());
+            }
+        }
+
+        for(String s : param.receiver){
+            WebMailReceivers.append(s + " ");
+        }
+
+        for(MultipartFile mul : param.attachments){
+            WebMailFiles.append(mul.getOriginalFilename() + " ");
+        }
+
+        /* WebMail 저장 */
+        webMailRepository.save(WebMail.builder()
+                .mailId(inputMailId)
+                .receiver(WebMailReceivers.toString().trim())
+                .sender(username + "@" + domain)
+                .subject(param.subject)
+                .content(param.contents)
+                .date(new Date())
+                .files(WebMailFiles.toString().trim())
+                .isReceived(false)
+                .dangerURL(false)
+                .haveToApproval(haveToCheck)
+                .isAcceptApproval(null)
+                .build());
+
+        return inputMailId;
+    }
+
+
+    public void sendMailToMailServer(Map<String, String> res, Properties props, MailParam param, String username, String password){
+
+
+        try {
             props.put("mail.smtp.port", "25");
             props.put("mail.smtp.host", host);
             props.put("mail.smtp.socketFactory.fallback", "false");
@@ -75,22 +137,19 @@ public class SendSmtpMailService {
 
             MimeMessage message = new MimeMessage(mailSession);
             message.setFrom(username + "@" + domain);
-            for(String s: param.receiver) {
+            for (String s : param.receiver) {
                 message.addRecipients(Message.RecipientType.TO, String.valueOf(new InternetAddress(s)));
             }
-            /*System.out.println(username);
-            System.out.println(password);
-            System.out.println(param.subject);
-            System.out.println(param.contents);*/
+
             message.setSubject(param.subject);
             message.setContent(param.contents, "text/html;charset=utf-8");
-            for(String s: param.CC) {
+            for (String s : param.CC) {
                 message.addRecipients(Message.RecipientType.CC, String.valueOf(new InternetAddress(s)));
             }
-            for(String s: param.BCC) {
+            for (String s : param.BCC) {
                 message.addRecipients(Message.RecipientType.BCC, String.valueOf(new InternetAddress(s)));
             }
-            if(!param.attachments.isEmpty()) {
+            if (!param.attachments.isEmpty()) {
                 BodyPart textPart = new MimeBodyPart();
                 textPart.setContent(param.contents, "text/html;charset=utf-8");
                 Multipart multipart = new MimeMultipart();
@@ -120,39 +179,6 @@ public class SendSmtpMailService {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        return res;
-    }
-
-
-    public void saveWebMail(MailParam param, String username){
-
-        Optional<WebMail> entity = webMailRepository.findFirstBySenderOrderByIdDesc(username + "@" + domain);
-        int inputMailId = entity.map(webMail -> (webMail.getMailId()) + 1).orElse(0);
-
-        StringBuilder WebMailReceivers = new StringBuilder("");
-        StringBuilder WebMailFiles = new StringBuilder("");
-
-
-        for(String s : param.receiver){
-            WebMailReceivers.append(s + " ");
-        }
-
-        for(MultipartFile mul : param.attachments){
-            WebMailFiles.append(mul.getOriginalFilename() + " ");
-        }
-
-        /* WebMail 저장 */
-        webMailRepository.save(WebMail.builder()
-                .mailId(inputMailId)
-                .receiver(WebMailReceivers.toString().trim())
-                .sender(username + "@" + domain)
-                .subject(param.subject)
-                .date(new Date())
-                .files(WebMailFiles.toString().trim())
-                .isReceived(false)
-                .dangerURL(false)
-                .build());
     }
 
 
